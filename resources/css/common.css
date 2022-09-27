@@ -1,0 +1,54 @@
+* {
+    /* debug only */
+    /* outline: 2px solid red; */
+    margin:0;
+    transition:all ease 0.25s;
+    font-family: Verdana, sans-serif;
+}
+
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 800,
+  'GRAD' 200,
+  'opsz' 48
+}
+
+
+a{
+    text-decoration: none;
+}
+
+input {outline:none;}
+
+body {
+    margin: 0;
+    padding:0;
+    min-height: 100vh;
+    background-color: #d1d1d1;
+}
+
+
+.container {
+    width:70%;
+    height: fit-content;
+    margin: auto;
+    min-width: 500px;
+}
+
+.content_wrapper{
+    min-height:95vh;
+    width: 100%;
+}
+
+.break{
+    height: 5px;
+    margin:20px 0px 20px 0px;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

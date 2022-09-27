@@ -1,0 +1,100 @@
+body {
+    height:100vh;
+}
+
+
+
+.form {
+    position: relative;
+    margin:auto;
+    backdrop-filter: brightness(110%);
+    box-shadow:0 0 30px 1px rgba(0, 0, 0, 0.479);
+    border-radius:10px;
+    width:30%;
+    min-width: 300px;
+    
+    top:30%;
+    padding:1%;
+
+}
+
+.form_upper{
+    display: flex;
+    justify-content: space-between;
+}
+
+.form_header {
+
+
+    margin: auto  auto 10px 5px;
+    
+}
+
+.back{
+    text-decoration: none;
+    width:100px;
+    box-shadow:0 0 30px 1px rgba(0, 0, 0, 0.479);
+    height: fit-content;
+    text-align: center;
+    border-radius: 10px;
+    font-size:20px;
+    color: black;
+    margin: auto 5px auto auto;
+    padding:8px;
+}
+
+.back:hover{
+    filter:brightness(110%);
+    background-color: #78938A;
+}
+
+.form_inner{
+display: flex;
+flex-direction: row;
+}
+
+.column{
+    display: flex;
+    flex-direction: column;
+}
+
+.register_form {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    width:100%;
+    height:80%;
+}
+
+.form_input{
+    font-size: 20px;
+    margin:10px;
+    border:none;
+    box-shadow:0 0 30px 1px rgba(0, 0, 0, 0.479);
+    padding:5px 10px;
+    border-radius: 10px;
+    text-align: center;
+    
+}
+
+.form_input:invalid{
+    color:red;
+}
+
+.register {
+    background-color: #78938A;
+    justify-self: left;
+}
+
+.reg {
+    text-decoration: none;
+    color:black;
+    background-color: #9ED2C6;
+}
+
+.reg:hover {
+   filter: brightness(110%);
+}
+.register:hover{
+    filter: brightness(110%);
+}
