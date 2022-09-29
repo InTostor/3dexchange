@@ -12,8 +12,7 @@ $avatar_url = "avatar.jpg";
 if (isset($_GET['id'])){
 $userid = $_GET['id'];
 }else{
-    http_response_code(404);
-    include("$ROOT/404.php");
+    raiseHttpError(400);
     die();
 }
 

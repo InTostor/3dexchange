@@ -5,8 +5,8 @@ require("$ROOT/resources/php/show_error.php");
 
 
 
-$ru_desc = $error_descriptions['404']['desc'];
-$rfc_desc = $error_descriptions['404']['rfc'];
+$ru_desc = $error_descriptions['401']['desc'];
+$rfc_desc = $error_descriptions['401']['rfc'];
 
 ?>
 <div class="page">

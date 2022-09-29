@@ -22,8 +22,25 @@ function isLogged(){
     $is_logged = false;
     if (isset($_COOKIE['logged_as']) and isset($_COOKIE['logged_with'])){
         $is_logged = $_COOKIE['logged_as']!="null" and $_COOKIE['logged_with']!="null";
+        return $is_logged and isLegitLogin();
     }
-    return $is_logged and isLegitLogin();
+    
+}
+
+function getLoggedAs(){
+    if (isset($_COOKIE['logged_as'])){
+    return $_COOKIE['logged_as'];
+    }else{
+        return "null";
+    }
+}
+
+
+function raiseHttpError($code){
+    http_response_code($code);
+    $ROOT = $_SERVER['DOCUMENT_ROOT'];
+    include("$ROOT/"."$code".".php");
+    
 }
 
 function isLegitLogin(){

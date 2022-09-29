@@ -16,4 +16,5 @@ $is_legit = isLegitLogin();
 <?=$username_given?> <br>
 
 <a href="/account/logout.php">выйти</a><br>
-<a href="/">на главную</a>
+<a href="/">на главную</a><br>
+<a href="actions.php">Действия</a>
