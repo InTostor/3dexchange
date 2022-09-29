@@ -22,7 +22,7 @@ $row = $result->fetch_assoc();
 
 if ( $row!=null ){
     $message="found";
-    rememberUser($username_given,$password_given);
+    rememberUser($username_given,md5($password_given));
     header("Refresh:0");
 }else{
     $message="not_found";
@@ -39,10 +39,7 @@ echo $_COOKIE["logged_as"];
 }
 
 
-function rememberUser($user,$pass){
-    setcookie("logged_as",$user, time()+60*60*24*3, '/');
-    setcookie("logged_with",md5($pass), time()+60*60*24*3, '/');
-}
+
 
 
 
@@ -75,6 +72,12 @@ function rememberUser($user,$pass){
                 <input class="form_input login" type="submit" name="login" value="Войти">
                 <h3 style="margin: auto;">или</h3>
                 <a href="/account/register.php" class="form_input reg" >Зарегестироваться</a>
+                <?php
+                    if ($message=="not_found"){
+                        echo "<h3 style='color:red;'>Неверное имя пользователя или пароль </h3>";
+                    }
+
+                ?>
             </form>
         
             
@@ -82,6 +85,6 @@ function rememberUser($user,$pass){
 </div>
 
 
-<?=$message?>
+
 </body>
 </html>

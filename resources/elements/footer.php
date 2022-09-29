@@ -6,7 +6,7 @@
             <a class="flink" href="https://github.com/InTostor">made with 🍏 by InTostor</a>
         </div>
         <div class="donate fcol">
-            <h3>поддержать меня</h3>
+            <h3>поддержать меня<span style="color:rgba(0,0,0,0.01)"> за руку</span></h3>
             <h6> ETH: 0xe4d8e5994e0940cf5300f36ccd74d269812daca5</h6>
         </div>
         <div class="fnav">

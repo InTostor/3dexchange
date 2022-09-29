@@ -9,7 +9,14 @@ require "$ROOT/resources/php/common.php";
 
 $avatar_url = "avatar.jpg";
 
+if (isset($_GET['id'])){
 $userid = $_GET['id'];
+}else{
+    http_response_code(404);
+    include("$ROOT/404.php");
+    die();
+}
+
 
 
 $conn = new mysqli($db_server, $db_username, $db_password, $db_database);

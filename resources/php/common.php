@@ -46,7 +46,10 @@ function isLegitLogin(){
     return $is_legit;
 }
 
-
+function rememberUser($user,$pass){
+    setcookie("logged_as",$user, time()+60*60*24*3, '/');
+    setcookie("logged_with",$pass, time()+60*60*24*3, '/');
+}
 
 function getDBconnection(){
     global $db_server;

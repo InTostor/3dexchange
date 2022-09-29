@@ -1,32 +1,49 @@
 <?php
+$ROOT = $_SERVER['DOCUMENT_ROOT'];
+require "$ROOT/settings/settings.php";
+require "$ROOT/resources/php/common.php";
+
 
 $can_register=false;
 
+if (isset($_POST['register'])){
 $username_given=$_POST['username'];
 $password_given=$_POST['password'];
-$email_given=$_POST['email'];
-$telephone_given=$_POST['tel'];
-$location_given=$_POST['location'];
+$email_given=nullIfNone($_POST['email']);
+$telephone_given=nullIfNone($_POST['tel']);
+$location_given=nullIfNone($_POST['location']);
 
-$can_register = isUserExists($username_given);
+$can_register = !isUserExists($username_given);
     
+}
 
 
 
-if ($can_register){
+function nullIfNone($chk){
+    if ($chk==""){
+        return "null";
+    }else{
+        return $chk;
+    }
+}
+
+
+if ($can_register ){
 $conn = getDBconnection();
-$stmt = $conn->prepare('INSERT INTO table_name (username, password, register_date, email, phone_number,location)
+$stmt = $conn->prepare('INSERT INTO users (username, password, register_date, email, phone_number,location)
 VALUES (?, ?, ?, ?, ?, ?); ');
-$stmt->bind_param("ss", $username_given, $password_given);
+$stmt->bind_param("ssisss", $username_given, md5($password_given),time(),$email_given,$telephone_given,$location_given);
 $stmt->execute();
 $stmt->close();
 $conn->close();
+
+rememberUser($username_given,md5($password_given));
+
+header('location: /account/welcome.php');
 }
 
-foreach ($_POST as $val){
-    echo "$val <br>";
-}
 
+echo $can_register? ' можно ' : ' нельзя ';
 ?>
 
 
@@ -60,17 +77,20 @@ foreach ($_POST as $val){
                 <input class="form_input" type="text"  name="location"  placeholder="страна/город">
 
                 <input class="form_input register" type="submit" name="register" value="Зарегестрироваться">
+                <?php
+                    if (!$can_register and isset($_POST['register']) ){
+                        echo "<h3 style='color:red;'>Невозможно зарегестрироваться: этот пользователь уже существует </h3>";
+                    }
 
+
+                ?>
+                </form>
 
 
 
         </div>
 
-        <div class="form_inner">
 
-        
-            </form>
-        </div>
 
     </div>
 

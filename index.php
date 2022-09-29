@@ -17,7 +17,7 @@ getHTMLstuff();
 
 </head>
 <div class="content_wrapper">
-<?php include "$ROOT /resources/elements/header.html"; //include header ?>
+<?php include "$ROOT /resources/elements/header.php"; //include header ?>
 
 
 
@@ -44,4 +44,4 @@ getHTMLstuff();
 
 </div>
 
-<?php include "$ROOT /resources/elements/footer.html"; //include footer ?>
+<?php include "$ROOT /resources/elements/footer.php"; //include footer ?>

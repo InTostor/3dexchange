@@ -21,7 +21,7 @@ $part_description = "Описание демонстрационной дета�
     <link rel="stylesheet" href="/item/index.css">
 </head>
 <div class="content_wrapper">
-    <?php include "$ROOT /resources/elements/header.html"; //include header 
+    <?php include "$ROOT /resources/elements/header.php"; //include header 
     ?>
     <div class="container">
 
@@ -38,10 +38,9 @@ $part_description = "Описание демонстрационной дета�
             <div class="right_column">
                 <a class="right_side_button" href="#">Скопировать ссылку</a>
                 <a class="right_side_button" href="#">Добавить реализацию</a>
-                <a class="right_side_button" href="#">Какие-то еще действия</a>
-                <a class="right_side_button" href="#">Какие-то еще действия</a>
-                <a class="right_side_button" href="#">Какие-то еще действия</a>
-                <a class="right_side_button" href="#">Какие-то еще действия</a>
+                <a class="right_side_button" href="#">Сохранить в закладки</a>
+                <a class="right_side_button" href="#">Тех.документация от производителя</a>
+
                 <a class="right_side_button" href="#">Пожаловаться</a>
                 
 
@@ -79,5 +78,5 @@ $part_description = "Описание демонстрационной дета�
 
     </div>
 </div>
-<?php include "$ROOT /resources/elements/footer.html"; //include footer 
+<?php include "$ROOT /resources/elements/footer.php"; //include footer 
 ?>
