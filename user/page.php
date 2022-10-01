@@ -13,7 +13,7 @@
     <div class="break"></div>
         <div class="row">
             <div class="avatar">
-                <img class="avatar_img" src=<?= "/user/$avatar_url" ?>>
+                <img class="avatar_img" src=<?= "$avatar_url" ?>>
                 <h1><?= $username ?></h1>
                 <h3><?= $location ?></h3>
                 <h4><?= $mood ?></h4>

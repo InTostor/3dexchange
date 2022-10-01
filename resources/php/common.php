@@ -1,6 +1,8 @@
 <?php
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
 include "$ROOT/settings/settings.php";
+include "$ROOT/resources/php/loggger.php";
+include "$ROOT/resources/php/user.php";
 
 
 function isUserExists($username){
@@ -52,14 +54,14 @@ function isLegitLogin(){
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-
+    $stmt->close();
+    $conn->close();
     if ($row!=null){
         $is_legit = true;
     }else{
         $is_legit = false;
     }
-    $stmt->close();
-    $conn->close();
+
     return $is_legit;
 }
 

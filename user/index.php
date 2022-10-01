@@ -7,16 +7,26 @@ require "$ROOT/resources/php/common.php";
 
 
 
-$avatar_url = "avatar.jpg";
 
 if (isset($_GET['id'])){
-$userid = $_GET['id'];
+$user_id = $_GET['id'];
+$username = getUsernameById($user_id);
+}elseif(isset($_GET['username'])){
+    $username = $_GET['username'];
+    $user_id = getUserIdByUsername($username);
 }else{
     raiseHttpError(400);
     die();
 }
 
 
+if (file_exists("$ROOT/upload/avatars/$user_id.png")){
+    $avatar_url="/upload/avatars/$user_id.png";
+}elseif (file_exists("$ROOT/upload/avatars/$user_id.gif")){
+    $avatar_url="/upload/avatars/$user_id.gif";
+}else{
+    $avatar_url = "/resources/images/no_avatar.png";
+}
 
 $conn = new mysqli($db_server, $db_username, $db_password, $db_database);
 // Check connection
@@ -25,7 +35,7 @@ if ($conn->connect_error) {
 }
 
 
-$sql = "SELECT * FROM users where idusers=$userid";
+$sql = "SELECT * FROM users where idusers=$user_id";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
