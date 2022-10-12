@@ -12,6 +12,8 @@ function isUserExists($username){
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
     if ($row!=null){
         return true;
     }else{
@@ -25,6 +27,8 @@ function isLogged(){
     if (isset($_COOKIE['logged_as']) and isset($_COOKIE['logged_with'])){
         $is_logged = $_COOKIE['logged_as']!="null" and $_COOKIE['logged_with']!="null";
         return $is_logged and isLegitLogin();
+    }else{
+        return false;
     }
     
 }

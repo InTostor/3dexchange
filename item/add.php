@@ -1,9 +1,50 @@
 добавление детали
 
 <?php
+if (!isLogged()){
+    raiseHttpError(401);
+    die();
+}
 
 if (isset($_POST['confirm'])){
 echo var_dump($_POST);
+    $conn = getDBconnection();
+    $result = $conn->query('select max(idparts) from parts');
+    $next_id = $result->fetch_assoc()['max(idparts)'];
+    if ($next_id=="NULL"){$next_id=0;}
+    $next_id += 1;
+    $conn->close();
+
+    echo getUserIdByUsername(getLoggedAs());
+    echo $_POST['original_manufacturer'];
+    echo $_POST['original_name'];
+    echo $_POST['original_cost'];
+    echo $_POST['original_material'];
+    echo $_POST['original_made_for'];
+    echo $_POST['fully_compatible_for'];
+    echo $_POST['partly_compatible_for'];
+
+
+    $conn = getDBconnection();
+    $stmt = $conn->prepare(
+    "insert into parts 
+    (`first_author`, `original_manufacturer`, `original_name`, `original_cost`, `original_material`, `original_made_for`,`fully_compatible_with`,`partly_compatible_with`) 
+    VALUES (?,?,?,?,?,?,?,?);"
+);
+    $stmt->bind_param("ssssssss", 
+    getUserIdByUsername(getLoggedAs()),
+    $_POST['original_manufacturer'],
+    $_POST['original_name'],
+    $_POST['original_cost'],
+    $_POST['original_material'],
+    $_POST['original_made_for'],
+    $_POST['fully_compatible_for'],
+    $_POST['partly_compatible_for'],
+);
+    $stmt->execute();
+    $stmt->close();
+    $conn->close();
+    header("location:/item?view&id=$next_id");
 }
 
 

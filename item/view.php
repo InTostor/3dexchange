@@ -3,8 +3,20 @@
 
 getHTMLstuff();
 
-$part_name = "Подшипник турбины ПД-14";
-$part_description = "Описание демонстрационной детали. Это описание берется делается - создателем модели, автором наиболее популярной реализации, администрацией. Должно быть в формате html без js";
+$conn = getDBconnection();
+$stmt = $conn->prepare("select * from parts where idparts=?;");
+$stmt->bind_param("s",$_GET['id']);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+$stmt->close();
+$conn->close();
+
+$part_name = $row['original_manufacturer']." | ".$row['original_name'];
+$part_description = "Описание демонстрационной детали. Это описание делается - создателем модели, автором наиболее популярной реализации, администрацией. Должно быть в формате html без js";
+
+$number_of_realizations = 0;
+
 
 
 
@@ -47,28 +59,26 @@ $part_description = "Описание демонстрационной дета�
         </div>
         <p class="part_decription"><?= $part_description; ?></p>
         <div class="realizations">
-            <h2 class="no_realizations">Еще нет реализаций этой детали <a href="#">добавить</a> </h2>
+            <?php if($number_of_realizations!=0){ echo '<h2 class="no_realizations">Еще нет реализаций этой детали <a href="#">добавить</a> </h2>';} ?>
 
-            <div class="realization">
-                <img class="realization_img" src="/resources/images/lukashenko.png" > 
-                <p class="realization_text"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                <a class="realization_author" href="/user?name=InTostor">Автор: InTostor</a>
+            <?php
 
-                <div class="realization_vote">
-                <a class="rating_change" href="#"><span class="material-symbols-outlined vote">expand_more</span></a>
+            echo "
+            <div class='realization'>
+                <img class='realization_img' src='/resources/images/lukashenko.png' > 
+                <p class='realization_text'> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+                <a class='realization_author' href='/user?name=InTostor'>Автор: InTostor</a>
+
+                <div class='realization_vote'>
+                <a class='rating_change' href='#'><span class='material-symbols-outlined vote'>expand_more</span></a>
                 +100500
-                <a class="rating_change" href="#"><span class="material-symbols-outlined vote">expand_less</span></a>
+                <a class='rating_change' href='#'><span class='material-symbols-outlined vote'>expand_less</span></a>
                 </div>
 
-                <a class="realization_download" href=""><span class="material-symbols-outlined">file_download</span>.zip</a>
+                <a class='realization_download' href=''><span class='material-symbols-outlined'>file_download</span>.zip</a>
             </div>
-
-            <div class="realization">
-                <img class="realization_img" src="/resources/images/lukashenko.png" > 
-                <p class="realization_text"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-                <a class="realization_author" href="/user?name=InTostor">Автор: InTostor</a>
-                <a class="realization_download" href=""><span class="material-symbols-outlined">file_download</span>.zip</a>
-            </div>
+            "
+            ?>
 
         </div>
 

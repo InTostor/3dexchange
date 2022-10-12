@@ -6,7 +6,7 @@ require_once "$ROOT/resources/php/common.php";
 $secret_message = " за руку";
 
 if (isLogged() and getLoggedAs()=="Hold4n"){
-$secret_message = " за член";
+$secret_message = "INC30LAg0YfQu9C10L0=";
 }
 ?>
 
@@ -18,7 +18,7 @@ $secret_message = " за член";
             <a class="flink" href="https://github.com/InTostor">made with 🍏 by InTostor</a>
         </div>
         <div class="donate fcol">
-            <h3>поддержать меня<span style="color:rgba(0,0,0,0.01)"><?=$secret_message?></span></h3>
+            <h3>поддержать меня<span style="color:rgba(0,0,0,0.01)"><?=base64_decode($secret_message)?></span></h3>
             <h6> ETH: 0xe4d8e5994e0940cf5300f36ccd74d269812daca5</h6>
         </div>
         <div class="fnav">
