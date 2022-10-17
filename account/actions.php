@@ -84,9 +84,6 @@ function setUserAvatar(){
         return "file is not the image";
         $uploadOk = 0;
     }
-
-
-
     
 
     if ($_FILES["avatar_file"]["size"] > 500000) {

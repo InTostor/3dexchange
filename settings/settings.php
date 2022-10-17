@@ -1,5 +1,5 @@
 <?php
-$is_development = false;
+$is_development = true;
 $default_theme = "light";
 $region = "Russia";
 
