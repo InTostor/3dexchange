@@ -12,9 +12,9 @@
             </nav>
         </div>
         <div class="header_bottom">
-            <form class="search">
-                <input class="search_field" type="search" placeholder="производитель/id/тип/название/предназначение">
-                <input class="search_submit" type="button"  onclick="notavailable()"   value="/искать/">
+            <form action="/search" method="get" class="search">
+                <input name="q" class="search_field" type="search" placeholder="производитель/id/тип/название/предназначение">
+                <input name="submit" class="search_submit" type="button" type="submit" onclick="notavailable()"   value="/искать/">
                 <!-- add this type="submit" -->
             </form>
         </div>

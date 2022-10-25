@@ -29,7 +29,7 @@ function getUsernameById(int $id){
     $stmt->close();
     $conn->close();
     if ($row!=null){
-        $is_legit = true;
+        return $row["username"];
     }else{
         return 0;
     }

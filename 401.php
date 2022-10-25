@@ -22,7 +22,7 @@ $m=$ma[1];
 <div class="blurer">
 
     <div class=return>
-    <h1 ><?=$ru_desc?>. <a href="/"> Вернуться? </a> </h1>
+    <h1 ><?=$ru_desc?>. <a href="/account">Войти?</a> <a href="/"> Вернуться? </a> </h1>
     <h4><?=$rfc_desc?></h4>
     <h5><?=decbin($sel)."b"?>/<?=decbin($m)."b"?></h5>
     </div>

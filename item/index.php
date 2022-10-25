@@ -7,6 +7,8 @@ if (isset($_GET['add'])){
     include "add.php";
 }elseif (isset($_GET['view']) and isset($_GET['id'])){
     include "view.php";
+}elseif (isset($_GET['edit']) and isset($_GET['id'])){
+    include "edit.php";
 }else{
     raiseHttpError(404);
     die();

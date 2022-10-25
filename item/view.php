@@ -24,7 +24,7 @@ $conn->close();
 
 $part_name = $row['original_manufacturer']." | ".$row['original_name'];
 $part_description = "Описание демонстрационной детали. Это описание делается - создателем модели, автором наиболее популярной реализации, администрацией. Должно быть в формате html без js";
-
+$part_tags = $row['tags'];
 
 
 
@@ -72,9 +72,10 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
                 <a class="right_side_button" href="#">Добавить реализацию</a>
                 <a class="right_side_button" href="#">Сохранить в закладки</a>
                 <a class="right_side_button" href="#">Тех.документация от производителя</a>
+                <a class="right_side_button" href="/item?edit&id=<?=$part_id?>">Редактировать</a>
 
                 <a class="right_side_button" href="#">Пожаловаться</a>
-                
+                <?="тэги: $part_tags"?>
 
             </div>
 
@@ -94,6 +95,7 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
 
                 
                 $rid = $rr[0];
+                $name = $rr[2];
                 $author = getUsernameById($rr[3]);
                 $rating = $rr[4];
                 $make_date = $rr[5];
@@ -111,9 +113,9 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
                 $file_url = "/upload/realizations/$part_id-$rid.zip";
                 $editRelUrl ="/realization?edit&pid=1&rid=$rid";
             echo "
-            <div class='realization'>
+            <div class='realization' id=$rid>
                 <img class='realization_img' src=$relimage_url > 
-                <p class='realization_text'> $rel_description </p>
+                <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
                 <a class='realization_author' href='/user?name=InTostor'>Автор: InTostor</a>
                 <a href='$editRelUrl'> edit </a>
 

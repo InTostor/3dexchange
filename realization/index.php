@@ -86,6 +86,17 @@ function setRealizationZipFile(){
     move_uploaded_file($_FILES["rel_image_file"]['tmp_name'], "$target_dir/$pid-$rid.zip");
 }
 
+function make(){
+    $conn=getDBconnection();
+    $sql = "insert into realizations (make_date,name) values (" .time().",'null')" ;
+    $conn->query($sql);
+    $sql = "select max(idrealizations) from realizations";
+    $conn->query($sql);
+    $id = $conn->insert_id;
+    $conn->close();
+    return $id;
+}
+
 function setRealizationDescription($text){
     global $rid;
     global $pid;
@@ -111,6 +122,9 @@ function setRealizationDescription($text){
 
 if (isset($_POST)){
     
+    if ($mode=="create"){
+       $rid = make();
+    }
  
     if (isset($_POST["description_md"])){
         setRealizationDescription($_POST["description_md"]);
@@ -126,6 +140,7 @@ if (isset($_POST)){
         setRealizationZipFile();
     
     }
+    
 
 }
 

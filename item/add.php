@@ -1,6 +1,10 @@
-добавление детали
-
 <?php
+$pid = $_GET['id'];
+if(isset($_GET['add'])){
+    echo "добавление детали $pid";
+}
+
+
 if (!isLogged()){
     raiseHttpError(401);
     die();
