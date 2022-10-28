@@ -24,26 +24,50 @@ Class Database {
         $conn->close();
     }
 
-    static function select($table,$where,$is){
-        
+
+
+
+    static function select($table,$where,$is){        
         $conn=getDB();
         $stmt = $conn->prepare("SELECT * FROM $table WHERE $where = ?");
         $stmt->bind_param("s",$is);
         $stmt->execute();        
-        $result = $stmt->get_result();
-
-        
-        $res = [];
-        
+        $result = $stmt->get_result();        
+        $res = [];        
         while($row = $result->fetch_assoc()) {
-
-
-            $res[] = $row;
-            
+            $res[] = $row;            
         }
         $stmt->close();
         $conn->close();
         return $res;
+    }
+    static function executeStmt($sql,$types,$values){
+        $conn=getDB();
+        $stmt = $conn->prepare("$sql");
+        $stmt->bind_param($types,...$values);
+        $stmt->execute();        
+        $result = $stmt->get_result();
+        $stmt->close();
+        $conn->close();
+        if (!is_bool($result)){
+        $res = [];        
+        while($row = $result->fetch_assoc()) {
+            $res[] = $row;            
+        }
+        return $res;
+    }
+    }
+
+    static function selectField($table,$field,$where,$is){
+        $conn=getDB();
+        $stmt = $conn->prepare("SELECT $field from $table WHERE $where = ?");
+
+        $stmt->bind_param("s",$is);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $stmt->close();
+        $conn->close();
+        return $result->fetch_assoc()[$field];
     }
 
 

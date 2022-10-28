@@ -26,8 +26,8 @@ if ( $row!=null ){
     $message="found";
     rememberUser($username_given,md5($password_given));
     $usr = new User();
-    $usr->consturctWithCurrentLogin();
-
+    $usr->constructWithUsername($username_given);
+    echo "username class".$usr->username;
     session_set_cookie_params(0);
     session_start();
     $_SESSION['ClassUser'] = $usr;
@@ -42,7 +42,7 @@ $conn->close();
 }
 
 if(isset($_COOKIE["logged_as"])) {
-echo $_COOKIE["logged_as"];
+
 
 }
 

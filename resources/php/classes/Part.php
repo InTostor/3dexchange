@@ -39,15 +39,23 @@ Class Part{
     }
     
 
-    function make(){
+    function register(){
 
         if (!($this->isExists())){
-
+            Database::executeStmt(
+                "insert into parts (first_author,original_manufacturer,original_name,original_cost,original_material,original_made_for,fully_compatible_with,partly_compatible_with,tags)",
+                "sssssssss",
+                [
+                    
+                ]
+            );
         }else{
             return false;
         }
 
     }
+
+
 
 
 

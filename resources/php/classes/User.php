@@ -13,6 +13,9 @@ class User {
     public $exists;
     private $email;
     private $phone;
+    public $location;
+    public $description_md;
+    public $mood;
 
 // pack/unpack class for transfer
 
@@ -25,6 +28,9 @@ class User {
             'exists' => $this->exists,
             'email' => $this->email,
             'phone' => $this->phone,
+            'location' => $this->location,
+            'description_md' => $this->description_md,
+            'mood' => $this->mood,
         ];
 
 
@@ -38,6 +44,9 @@ class User {
         $this->exists = $data['exists'];
         $this->email = $data['email'];
         $this->phone = $data['phone'];
+        $this->location = $data['location'];
+        $this->description_md = $data['description_md'];
+        $this->mood = $data['mood'];
 
     }
 // pack/unpack class for transfer
@@ -48,10 +57,10 @@ class User {
         $this->exists = $this->isExists();
     }
     
-    function constructWithUsername(int $username){
+    function constructWithUsername(string $username){
         $this->username = $username;
         $this->id=$this->getUserIdByUsername($username);
-        $this->exists = $this->isExists();
+        // $this->exists = $this->isExists();
     }
     
     function consturctWithCurrentLogin(){
@@ -74,7 +83,7 @@ class User {
             }
         }        
         function PisLegitLogin(){
-            $conn = getDBconnection();
+            $conn = getDB();
             $username_given = $_COOKIE["logged_as"];
             $password_given = $_COOKIE["logged_with"];
             $stmt = $conn->prepare('SELECT idusers FROM users where username = ? and password = ?');
@@ -93,11 +102,11 @@ class User {
         }
         $logged = PisLogged();
         if ($logged){
+            
             $this->username = PgetLoggedAs();
             $this->id=$this->getUserIdByUsername($this->username);
             // $this->exists = $this->isExists();
         }
-
         return $logged;
     }
     
@@ -129,8 +138,13 @@ class User {
         return true;
     }
 
+    function checkPassword($pass_md5){
+        return Database::selectField('users','password','idusers',$this->id) == $pass_md5 ;
+    }
+
+
     function isExists(){
-        $conn = getDBconnection();
+        $conn = getDB();
         $stmt = $conn->prepare("select idusers from users where idusers = ?");
         $id = $this->id;
         $stmt->bind_param("i",$id);
@@ -164,7 +178,7 @@ class User {
         if (isset($this->email)){
             return $this->email;
         }else{
-            $conn = getDBconnection();
+            $conn = getDB();
             $stmt = $conn->prepare("select email from users where idusers=?");
             $stmt->bind_param("i",$this->id);
             $stmt->execute();
@@ -178,7 +192,7 @@ class User {
         if (isset($this->phone)){
             return $this->phone;
         }else{
-            $conn = getDBconnection();
+            $conn = getDB();
             $stmt = $conn->prepare("select phone_number from users where idusers=?");
             $stmt->bind_param("i",$this->id);
             $stmt->execute();
@@ -192,7 +206,7 @@ class User {
         if (isset($this->username)){
             return $this->username;
         }else{
-            $conn = getDBconnection();
+            $conn = getDB();
             $stmt=$conn->prepare("select username from users where idusers=?");
             $stmt->bind_param("i",$this->id);
             $stmt->execute();
@@ -209,12 +223,36 @@ class User {
         return Database::select("users","idusers",$this->id);
     }
 
+    function getDescription(){
+        if (isset($this->description_md)){
+            return $this->description_md;
+        }else{
+        $r =  Database::selectField('users','description_md','idusers',$this->id);
+        }
+        return $r;
+    }
+    function getLocation(){
+        if (isset($this->location)){
+            return $this->location;
+        }else{
+        $r =  Database::selectField('users','location','idusers',$this->id);
+        }
+        return $r;
+    }
+    function getMood(){
+        if (isset($this->mood)){
+            return $this->mood;
+        }else{
+        $r =  Database::selectField('users','mood','idusers',$this->id);
+        }
+        return $r;
+    }
 
 
     function register(){
 
         if (!($this->isExists())){
-            $conn=getDBconnection();
+            $conn=getDB();
             $stmt = $conn->prepare("insert into users (username,password,register_date,email,phone_unmber) values(?,?,?,?,?)");
             $time=time();
             $stmt->bind_param("ssiss",
@@ -236,7 +274,7 @@ class User {
 
 
     function updatePassword($pass_md5){
-        Database::updateField("users","last_login_date","idusers",$this->id,$pass_md5);
+        Database::updateField("users","password","idusers",$this->id,$pass_md5);
     }
 
     function updateAvatar($newAvatar){
@@ -248,27 +286,32 @@ class User {
     function updateLastLoginDate($datetime = -1){
         if ($datetime == -1){$datetime=time();} // if datetime not set, get current time
         Database::updateField("users","last_login_date","idusers",$this->id,$datetime);
+        $this->last_login_date = $datetime;
     }
 
     function updateLocation($location){
         Database::updateField("users","location","idusers",$this->id,$location);
+        $this->location = $location;
     }
 
     function updateMood($mood){
         Database::updateField("users","mood","idusers",$this->id,$mood);
+        $this->mood=$mood;
     }
 
-    function updateemail($email){
+    function updateEmail($email){
         Database::updateField("users","email","idusers",$this->id,$email);
+        $this->email=$email;
     }
 
     function updatePhone($phone){
         Database::updateField("users","phone_number","idusers",$this->id,$phone);
+        $this->phone=$phone;
     }
 
 
     private function getUserIdByUsername($username){
-        $conn = getDBconnection();
+        $conn = getDB();
     
         $stmt = $conn->prepare('SELECT idusers FROM users where username = ?');
         $stmt->bind_param("s", $username);
@@ -286,7 +329,7 @@ class User {
     
     
     private function getUsernameById(int $id){
-        $conn = getDBconnection();
+        $conn = getDB();
         $stmt = $conn->prepare('SELECT username FROM users where idusers = ?');
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -300,11 +343,5 @@ class User {
             return 0;
         }
     }
-    
-
-
-
 }
-
 ?>
-
