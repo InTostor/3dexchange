@@ -69,7 +69,7 @@ echo $can_register? ' можно ' : ' нельзя ';
 
             <form action="" method="post" id="register" class="register_form">
                 *обязательно
-                <input class="form_input" type="text" name="username" required placeholder="имя пользователя*">
+                <input class="form_input" type="text" name="username" required placeholder="псевдоним*">
                 <input class="form_input" type="password" name="password" pattern=".{8,}" required placeholder="пароль*">
                 (пароль должен быть длиннее 8 символов)
                 <input class="form_input" type="email" name="email" placeholder="email">
@@ -77,6 +77,8 @@ echo $can_register? ' можно ' : ' нельзя ';
                 <input class="form_input" type="text"  name="location"  placeholder="страна/город">
 
                 <input class="form_input register" type="submit" name="register" value="Зарегестрироваться">
+                <p>нажимая кнопку "зарегестрироваться", вы принимаете: <a href="/documents/EULA.txt">пользовательское соглашение</a>,<br>
+                <a href="/documents/rules.txt">правила</a><br> и <a href="/documents/privacy_policy">политику конфиденциальности</a></p>
                 <?php
                     if (!$can_register and isset($_POST['register']) ){
                         echo "<h3 style='color:red;'>Невозможно зарегестрироваться: этот пользователь уже существует </h3>";

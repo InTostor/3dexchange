@@ -4,11 +4,16 @@ require "$ROOT/settings/settings.php";
 require "$ROOT/resources/php/common.php";
 
 if (isset($_GET['add'])){
-    include "add.php";
+    $mode="create";
+    include "actions.php";
 }elseif (isset($_GET['view']) and isset($_GET['id'])){
+    $pid = $_GET['id'];
+    $mode="view";
     include "view.php";
 }elseif (isset($_GET['edit']) and isset($_GET['id'])){
-    include "edit.php";
+    $pid = $_GET['id'];
+    $mode="edit";
+    include "actions.php";
 }else{
     raiseHttpError(404);
     die();

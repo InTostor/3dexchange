@@ -1,6 +1,7 @@
 <?php
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
 require_once("$ROOT/resources/php/classes/User.php");
+require_once("$ROOT/resources/php/classes/File.php");
 require_once("$ROOT/resources/php/classes/Validator.php");
 session_set_cookie_params(0);
 session_start();
@@ -12,11 +13,7 @@ $assoc = $usr->getAssocData()[0];
 
 
 if (isset($_REQUEST['confirm_password_change'])){
-
     $continue=false;
-
-
-
     if ($_REQUEST['new_password']===$_REQUEST['confirm_password']){ // check password match
        
         $continue = $usr->checkPassword(md5($_REQUEST['curr_password'])); // check old password
@@ -27,11 +24,9 @@ if (isset($_REQUEST['confirm_password_change'])){
         $message = "too short password";
         $continue=false;
     }
-
     if ($continue){
         $usr->updatePassword(md5($_REQUEST['new_password']));
-        $message = "ok";
-        
+        $message = "ok";        
     }else{
         $message =  "wrong password";
     }
@@ -49,8 +44,16 @@ if (isset($_REQUEST['confirm_value_change'])){
     $r['mood'],
     $r['location']
 ]);
-
 }
+
+if (isset($_REQUEST['confirm_avatar_change'])){
+
+    // !not working yet
+    $usr->updateAvatar($_FILES["avatar_file"]["tmp_name"]);
+    File::cleanTempShit("$ROOT/account");
+}
+
+
 
 
 
@@ -70,6 +73,12 @@ $location = $usr->getLocation();
 <p>Местоположение<input  maxlength="4096" type="text" name="location" required placeholder="Текст на странице аккаунта в формате html"value=<?=$location?>></textarea></p>
     <input  type="submit" name="confirm_value_change" value="применить">
 </form>
+
+<form action="" method="post" id="change_avatar" enctype="multipart/form-data">
+<input type="file" accept=".jpeg,.jpg,.png,.gif" name="avatar_file">
+<input type="submit" name="confirm_avatar_change" value="изменить">
+</form>
+
 
 <form action="" method="post" id="change_password">
 <input  maxlength="256" type="password" name="curr_password" required placeholder="текущий пароль">

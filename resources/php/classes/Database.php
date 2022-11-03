@@ -41,12 +41,14 @@ Class Database {
         $conn->close();
         return $res;
     }
-    static function executeStmt($sql,$types,$values){
+
+    static function executeStmt($sql,$types,$values){        
         $conn=getDB();
         $stmt = $conn->prepare("$sql");
         $stmt->bind_param($types,...$values);
-        $stmt->execute();        
+        $stmt->execute();
         $result = $stmt->get_result();
+        $lastId = $stmt->insert_id;
         $stmt->close();
         $conn->close();
         if (!is_bool($result)){
@@ -54,14 +56,17 @@ Class Database {
         while($row = $result->fetch_assoc()) {
             $res[] = $row;            
         }
-        return $res;
+        return $res;        
+    }else{
+        return $lastId;
     }
     }
+
+
 
     static function selectField($table,$field,$where,$is){
         $conn=getDB();
         $stmt = $conn->prepare("SELECT $field from $table WHERE $where = ?");
-
         $stmt->bind_param("s",$is);
         $stmt->execute();
         $result = $stmt->get_result();

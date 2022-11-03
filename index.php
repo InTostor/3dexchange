@@ -24,18 +24,18 @@ getHTMLstuff();
 <div class="container">
 
     <div class="items_row">
-        <a href="/category?1" class="item i1">Крупная бытовая техника</a>
-        <a href="/category?2" class="item i2">Малая бытовая техника</a>
-        <a href="/category?3" class="item i3">Легкий транспорт</a>
-        <a href="/category?4" class="item i4">Носимая электроника</a>
-        <a href="/category?5" class="item i5">Игрушки и РУ модели</a>
-        <a href="/category?6" class="item i6">Тяжелый транспорт</a>
-        <a href="/category?7" class="item i7">фототехника</a>
-        <a href="/category?8" class="item i8">памятники ссср</a>
-        <a href="/category?9" class="item i9">акультисткие тотемы</a>
-        <a href="/category?10" class="item i10">космические аппараты</a>
-        <a href="/category?11" class="item i11">дореволюционная авиация</a>
-        <a href="/category?12" class="item i12">инопланетные технологии</a>
+        <a href="/search?category=large_appliances" class="item i1">Крупная бытовая техника</a>
+        <a href="/search?category=small_appliances" class="item i2">Малая бытовая техника</a>
+        <a href="/search?category=light_vehicle" class="item i3">Легкий транспорт</a>
+        <a href="/search?category=heavy_vehicle" class="item i6">Тяжелый транспорт</a>
+        <a href="/search?category=wearable_electronics" class="item i4">Носимая электроника</a>
+        <a href="/search?category=toys_rc" class="item i5">Игрушки и РУ модели</a>
+        <a href="/search?category=photo_equipment" class="item i7">фототехника</a>
+        <a href="/search?category=none" class="item i8">памятники ссср</a>
+        <a href="/search?category=none" class="item i9">акультисткие тотемы</a>
+        <a href="/search?category=none" class="item i10">космические аппараты</a>
+        <a href="/search?category=none" class="item i11">дореволюционная авиация</a>
+        <a href="/search?category=none" class="item i12">инопланетные технологии</a>
     </div>
 
 

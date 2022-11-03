@@ -1,6 +1,8 @@
 <?php
 
 require_once('Database.php');
+require_once('File.php');
+require_once $_SERVER['DOCUMENT_ROOT']."/settings/settings.php";
 
 
 
@@ -16,6 +18,8 @@ class User {
     public $location;
     public $description_md;
     public $mood;
+    public $register_date;
+
 
 // pack/unpack class for transfer
 
@@ -31,6 +35,7 @@ class User {
             'location' => $this->location,
             'description_md' => $this->description_md,
             'mood' => $this->mood,
+            'register_date' => $this->register_date
         ];
 
 
@@ -47,19 +52,20 @@ class User {
         $this->location = $data['location'];
         $this->description_md = $data['description_md'];
         $this->mood = $data['mood'];
+        $this->register_date = $data['register_date'];
 
     }
 // pack/unpack class for transfer
 
     function constructWithId(int $id){
         $this->id = $id;
-        $this->username=$this->getUsernameById($id);
-        $this->exists = $this->isExists();
+        $this->username=$this->convertIdToUsername($id);
+        // $this->exists = $this->isExists();
     }
     
     function constructWithUsername(string $username){
         $this->username = $username;
-        $this->id=$this->getUserIdByUsername($username);
+        $this->id=$this->convertUsernameToId($username);
         // $this->exists = $this->isExists();
     }
     
@@ -104,7 +110,7 @@ class User {
         if ($logged){
             
             $this->username = PgetLoggedAs();
-            $this->id=$this->getUserIdByUsername($this->username);
+            $this->id=$this->convertUsernameToId($this->username);
             // $this->exists = $this->isExists();
         }
         return $logged;
@@ -113,12 +119,15 @@ class User {
 // ! remember that user view is in /user and user editing in /account/actions.php
 
     function getViewUrl($isSystemRoot = false){
+        return $this->getViewUrlWithId($this->id,$isSystemRoot);
+    }
+    static function getViewUrlWithId($id,$isSystemRoot = false){
         if ($isSystemRoot==false){
-        return "/user?view&id=$this->id";
-        }else{
-            $rt = $_SERVER['DOCUMENT_ROOT'];
-        return "$rt/user?view&id=$this->id";
-        }
+            return "/user?view&id=$id";
+            }else{
+                $rt = $_SERVER['DOCUMENT_ROOT'];
+            return "$rt/user?view&id=$id";
+            }
     }
     
     function geteditUrl($isSystemRoot = false){
@@ -146,8 +155,8 @@ class User {
     function isExists(){
         $conn = getDB();
         $stmt = $conn->prepare("select idusers from users where idusers = ?");
-        $id = $this->id;
-        $stmt->bind_param("i",$id);
+        $stmt->bind_param("i",$this->id);
+        $stmt->execute();
         $res = $stmt->get_result();
         $val=$res->fetch_assoc();
         if ($val['idusers'] =="null" ){
@@ -157,22 +166,25 @@ class User {
         }
         $stmt->close();
         $conn->close();
+        return $this->exists;
     }
 
 
     function getAvatarUrl($isSystemRoot = false):string{
         $rt = $_SERVER['DOCUMENT_ROOT'];
+        global $USER_AVATAR_STORAGE;
         if (file_exists("$rt/upload/avatars/".$this->id.".png")){$rel = $this->id.".png";
         }elseif (file_exists("$rt/upload/avatars/".$this->id.".jpeg")){$rel = $this->id.".jpeg";
         }elseif (file_exists("$rt/upload/avatars/".$this->id.".gif")){$rel = $this->id.".gif";
         }else{$rel = "resources/no_avatar.png";}
-        
+
         if ($isSystemRoot){
-            return $rt."/".$rel;
+            return $rt."/".$USER_AVATAR_STORAGE."/".$rel;
         }else{
-            return "/$rel";
+            return "/".$USER_AVATAR_STORAGE."/$rel";
         }
     }
+
 
     function getEmail(){
         if (isset($this->email)){
@@ -218,8 +230,6 @@ class User {
         }
     }
     function getAssocData():array{
-        echo "bebra";
-        echo $this->id;
         return Database::select("users","idusers",$this->id);
     }
 
@@ -246,6 +256,13 @@ class User {
         $r =  Database::selectField('users','mood','idusers',$this->id);
         }
         return $r;
+    }
+    function getRegisterDate(){
+        if (isset($this->register_date)){
+            return $this->register_date;
+        }else{
+        return  Database::selectField('users','register_date','idusers',$this->id);
+        }
     }
 
 
@@ -278,10 +295,21 @@ class User {
     }
 
     function updateAvatar($newAvatar){
-        $current = $this->getAvatarUrl();
-        $ext = end(explode('.',$current));
-        
+        $ROOT = $_SERVER['DOCUMENT_ROOT'];
+        $current = $this->getAvatarUrl(true);
+        $newFile = File::convertImageToPNG($newAvatar);
+        if (pathinfo($current)['filename']!="no_avatar"){
+        unlink($current);
+        }
+        global $USER_AVATAR_STORAGE;
+        $save = fopen("$ROOT/$USER_AVATAR_STORAGE/$this->id".".png","w");
+        echo var_dump($newFile);
+        move_uploaded_file($newFile, "$ROOT/$USER_AVATAR_STORAGE/$this->id".".png");
+
+
     }
+
+
 
     function updateLastLoginDate($datetime = -1){
         if ($datetime == -1){$datetime=time();} // if datetime not set, get current time
@@ -310,7 +338,7 @@ class User {
     }
 
 
-    private function getUserIdByUsername($username){
+    static function convertUsernameToId($username){
         $conn = getDB();
     
         $stmt = $conn->prepare('SELECT idusers FROM users where username = ?');
@@ -328,7 +356,7 @@ class User {
     }
     
     
-    private function getUsernameById(int $id){
+    static function convertIdToUsername(int $id){
         $conn = getDB();
         $stmt = $conn->prepare('SELECT username FROM users where idusers = ?');
         $stmt->bind_param("i", $id);
@@ -341,6 +369,35 @@ class User {
             return $row["username"];
         }else{
             return 0;
+        }
+    }
+    static function isLogged(){
+        $is_logged = false;
+        if (isset($_COOKIE['logged_as']) and isset($_COOKIE['logged_with'])){
+            $is_logged = $_COOKIE['logged_as']!="null" and $_COOKIE['logged_with']!="null";
+            return $is_logged and self::isLegitLogin();
+        }else{
+            return false;
+        }
+        
+    }
+    static function isLegitLogin(){
+        $username_given = $_COOKIE["logged_as"];
+        $password_given = $_COOKIE["logged_with"];
+        $row = Database::executeStmt('SELECT idusers FROM users where username = ? and password = ?',"ss",[$username_given, $password_given])[0];
+        if ($row!=null){
+            $is_legit = true;
+        }else{
+            $is_legit = false;
+        }
+    
+        return $is_legit;
+    }
+    static function getLoggedAs(){
+        if (isset($_COOKIE['logged_as'])){
+        return $_COOKIE['logged_as'];
+        }else{
+            return "null";
         }
     }
 }

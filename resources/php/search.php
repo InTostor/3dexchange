@@ -22,8 +22,8 @@ $conn->close();
 function getParts($q){
     $q="%$q%";
 $conn = getDBconnection();
-$stmt = $conn->prepare("select * from parts where idparts like ? or original_manufacturer like ? or original_name like ? or original_made_for like ? or fully_compatible_with like ?");
-$stmt->bind_param("sssss",$q,$q,$q,$q,$q);
+$stmt = $conn->prepare("select * from parts where idparts like ? or original_manufacturer like ? or original_name like ? or original_made_for like ? or fully_compatible_with like ? or category like ?");
+$stmt->bind_param("ssssss",$q,$q,$q,$q,$q,$q);
 $stmt->execute();
 $result = $stmt->get_result();
 
