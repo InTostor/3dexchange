@@ -301,7 +301,6 @@ Class Part{
         }else{
             return false;
         }
-
     }
 
     static function getCategoriesList(){
