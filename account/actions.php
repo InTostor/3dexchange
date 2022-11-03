@@ -1,162 +1,88 @@
 <?php
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
-require "$ROOT/settings/settings.php";
-require "$ROOT/resources/php/common.php";
+require_once("$ROOT/resources/php/classes/User.php");
+require_once("$ROOT/resources/php/classes/File.php");
+require_once("$ROOT/resources/php/classes/Validator.php");
+session_set_cookie_params(0);
+session_start();
 
-if (!isLogged()){
-    raiseHttpError(401);
-    die();
-}
+$usr = $_SESSION['ClassUser'];
 
-function deleteUser(){
-    $conn=getDBconnection();
-    $stmt = $conn->prepare('DELETE FROM `3dexchange`.`users` WHERE (`username` = "?")');
-    $stmt->bind_param("s", getLoggedAs());
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
-}
-
-function setUserDescription($text){
-    $conn=getDBconnection();
-    $stmt = $conn->prepare('UPDATE users SET description_md = ? WHERE username=?; ');
-    $stmt->bind_param("ss", $text ,getLoggedAs());
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
-}
-
-function setUserMood($text){
-    $conn=getDBconnection();
-    $stmt = $conn->prepare('UPDATE users SET mood = ? WHERE username=?; ');
-    $stmt->bind_param("ss", $text ,getLoggedAs());
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
-}
-
-function setUserLocation($text){
-    $conn=getDBconnection();
-    $stmt = $conn->prepare('UPDATE users SET location = ? WHERE username=?; ');
-    $stmt->bind_param("ss", $text ,getLoggedAs());
-    $stmt->execute();
-    $stmt->close();
-    $conn->close();
-}
-
-function deleteOldAvatar($file){
-    $path_arr=pathinfo($file);
-    $fdir = $path_arr['dirname'];
-    $fname = $path_arr['filename'];
-
-    if (file_exists($fdir."/".$fname.".png")){unlink($fdir."/".$fname.".png");}
-    if (file_exists($fdir."/".$fname.".png")){unlink($fdir."/".$fname.".gif");}
-}
-
-function setUserAvatar(){
-    global $upload_path;
-    $target_dir = "$upload_path/avatars/";
-    $logged_as = getLoggedAs();
-    $user_id = getUserIdByUsername($logged_as);
-    $target_file = "$target_dir/tmp";
-    $extension = ".png";
+$assoc = $usr->getAssocData()[0];
 
 
-    $uploadOk = 1;
 
-    deleteOldAvatar($target_dir .$user_id.$extension);
-
-    if(exif_imagetype($_FILES['avatar_file']['tmp_name']) ==  IMAGETYPE_GIF) 
-    {
-        $extension = ".gif";
-        $target_file = $target_dir .$user_id.$extension;
-    }
-    elseif(exif_imagetype($_FILES['avatar_file']['tmp_name']) ==  IMAGETYPE_JPEG) 
-    {
-        $target_file = $target_dir .$user_id.".png";
-        $target_file = imagepng(imagecreatefromjpeg($_FILES['avatar_file']['tmp_name']), $target_file);
-    }
-    elseif(exif_imagetype($_FILES['avatar_file']['tmp_name']) ==  IMAGETYPE_PNG) 
-    {
-        $extension = ".png";
-        $target_file = $target_dir .$user_id.$extension;
+if (isset($_REQUEST['confirm_password_change'])){
+    $continue=false;
+    if ($_REQUEST['new_password']===$_REQUEST['confirm_password']){ // check password match
+       
+        $continue = $usr->checkPassword(md5($_REQUEST['curr_password'])); // check old password
     }else{
-        return "file is not the image";
-        $uploadOk = 0;
+        $message =  "password mismatch";
     }
-    
-
-    if ($_FILES["avatar_file"]["size"] > 500000) {
-        return "Sorry, your file is too large.";
-        $uploadOk = 0;
-      }
-      if ($uploadOk==1){
-
-        move_uploaded_file($_FILES["avatar_file"]['tmp_name'], $target_file);
-      }
-
+    if (strlen($_REQUEST['new_password'])<8){ //check length
+        $message = "too short password";
+        $continue=false;
+    }
+    if ($continue){
+        $usr->updatePassword(md5($_REQUEST['new_password']));
+        $message = "ok";        
+    }else{
+        $message =  "wrong password";
+    }
 
 }
 
+if (isset($_REQUEST['confirm_value_change'])){
+    $r=$_REQUEST;
+    Database::executeStmt(
+    "UPDATE users SET email=?,phone_number=?,description_md=?,mood=?,location=? where idusers = $usr->id",
+    "sssss",
+    [$r['email'],
+    $r['phone_number'],
+    Validator::sanitizeUserInput($r['description_md']),
+    $r['mood'],
+    $r['location']
+]);
+}
 
+if (isset($_REQUEST['confirm_avatar_change'])){
 
-if (isset($_POST)){
-    
- 
-        if (isset($_POST["description_md"])){
-            setUserDescription($_POST["description_md"]);
-
-        }
-        if (isset($_POST["mood"])){
-            setUserMood($_POST["mood"]);
-        }
-        if (isset($_POST["location"])){
-
-            setUserLocation($_POST["location"]);
-        }
-        if (isset($_POST["avatar_file"])){
-
-            setUserAvatar();
-
-        }
-    
+    // !not working yet
+    $usr->updateAvatar($_FILES["avatar_file"]["tmp_name"]);
+    File::cleanTempShit("$ROOT/account");
 }
 
 
 
 
 
-
+$email = $usr->getEmail();
+$phone_number = $usr->getPhone();
+$desc = $usr->getDescription();
+$mood = $usr->getMood();
+$location = $usr->getLocation();
 ?>
 
-<style>
-form{
-    width:50%;
-    padding:5px;
-    border: 1px gray solid;
-}
+<form action="" method="post" id="change_values">
 
-
-</style>
-
-
-<form action="" method="post" id="change_description">
-<p><textarea maxlength="4096" type="text" name="description_md" required placeholder="Текст на странице аккаунта в формате html"></textarea></p>
-    <input  type="submit" name="confirm" value="применить">
+<p>----email-----<input maxlength="4096" type="email" name="email" required placeholder="Текст на странице аккаунта в формате html" value=<?=$email?>></p>
+<p>---телефон----<input  maxlength="4096" type="phone" name="phone_number" required placeholder="Текст на странице аккаунта в формате html"value=<?=$phone_number?>></p>
+<p>---описание---<textarea  maxlength="4096" type="text" name="description_md" required placeholder="Текст на странице аккаунта в формате html"><?=$desc?></textarea></p>
+<p>----статус----<textarea  maxlength="4096" type="text" name="mood" required placeholder="Текст на странице аккаунта в формате html"><?=$mood?></textarea></p>
+<p>Местоположение<input  maxlength="4096" type="text" name="location" required placeholder="Текст на странице аккаунта в формате html"value=<?=$location?>></textarea></p>
+    <input  type="submit" name="confirm_value_change" value="применить">
 </form>
 
-<form action="" method="post" id="change_mood">
-<p><textarea maxlength="45" type="text" name="mood" required placeholder="статус на странице аккаунта"></textarea></p>
-    <input  type="submit" name="confirm" value="применить">
+<form action="" method="post" id="change_avatar" enctype="multipart/form-data">
+<input type="file" accept=".jpeg,.jpg,.png,.gif" name="avatar_file">
+<input type="submit" name="confirm_avatar_change" value="изменить">
 </form>
 
-<form action="" method="post" id="change_location">
-<p><textarea maxlength="45" type="text" name="location" required placeholder="Местоположение"></textarea></p>
-    <input  type="submit" name="confirm" value="применить">
-</form>
 
-<form action="" method="post" id="change_avatar"  enctype="multipart/form-data">
-    <p>смена фото</p>
-    <input type="file" accept=".jpeg,.jpg,.png,.gif" name="avatar_file">
-    <input  type="submit" name="avatar_file" value="применить">
+<form action="" method="post" id="change_password">
+<input  maxlength="256" type="password" name="curr_password" required placeholder="текущий пароль">
+<input  maxlength="256" type="password" name="new_password" required placeholder="новый пароль">
+<input  maxlength="256" type="password" name="confirm_password" required placeholder="подтверждение пароля">
+<input  type="submit" name="confirm_password_change" value="применить">
 </form>

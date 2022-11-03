@@ -1,8 +1,10 @@
 <?php
-session_start();
+
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
-require "$ROOT/settings/settings.php";
-require "$ROOT/resources/php/common.php";
+require_once "$ROOT/settings/settings.php";
+require_once "$ROOT/resources/php/common.php";
+require_once("$ROOT/resources/php/classes/User.php");
+
 $message="";
 
 $username_given="";
@@ -23,6 +25,12 @@ $row = $result->fetch_assoc();
 if ( $row!=null ){
     $message="found";
     rememberUser($username_given,md5($password_given));
+    $usr = new User();
+    $usr->constructWithUsername($username_given);
+    echo "username class".$usr->username;
+    session_set_cookie_params(0);
+    session_start();
+    $_SESSION['ClassUser'] = $usr;
     header("Refresh:0");
 }else{
     $message="not_found";
@@ -34,7 +42,7 @@ $conn->close();
 }
 
 if(isset($_COOKIE["logged_as"])) {
-echo $_COOKIE["logged_as"];
+
 
 }
 

@@ -3,9 +3,7 @@
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
 require "$ROOT/settings/settings.php";
 require "$ROOT/resources/php/common.php";
-
-
-
+require_once "$ROOT/resources/php/classes/User.php";
 
 
 if (isset($_GET['id'])){
@@ -14,57 +12,24 @@ $username = getUsernameById($user_id);
 }elseif(isset($_GET['username'])){
     $username = $_GET['username'];
     $user_id = getUserIdByUsername($username);
+    
 }else{
     raiseHttpError(400);
     die();
 }
+$usr = new User();
+$usr->constructWithUsername($username);
 
+$avatar_url = $usr->getAvatarUrl();
 
-if (file_exists("$ROOT/upload/avatars/$user_id.png")){
-    $avatar_url="/upload/avatars/$user_id.png";
-}elseif (file_exists("$ROOT/upload/avatars/$user_id.gif")){
-    $avatar_url="/upload/avatars/$user_id.gif";
-}else{
-    $avatar_url = "/resources/images/no_avatar.png";
-}
-
-$conn = new mysqli($db_server, $db_username, $db_password, $db_database);
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
-$sql = "SELECT * FROM users where idusers=$user_id";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-
-
-try {
-} catch (Exception $ex) {
-} finally {
-    $conn->close();
-}
-
-
-
-
-
-if ($row == null and !$is_development) {
-
-    http_response_code(404);
-    include("$ROOT/404.php"); // provide your own HTML for the error page
-    die();
-}else{
-$username = $row['username'];
-$register_date = $row['register_date'];
-$email = $row['email'];
-$phone_number = $row['phone_number'];
-$access_level = $row['access_level'];
-$description_md = $row['description_md'];
-$mood = $row['mood'];
-$location = $row['location'];
+$username = $usr->getUsername();
+$register_date = $usr->getRegisterDate();
+$email = $usr->getEmail();
+$phone_number = $usr->getPhone();
+// $access_level = $usr->getAcc(); INOP
+$description_md = $usr->getDescription();
+$mood = $usr->getMood();
+$location = $usr->getLocation();
 getHTMLstuff();
 
 include "page.php";
-}

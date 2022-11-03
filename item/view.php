@@ -9,6 +9,12 @@ if ($part_id==NULL){
     die();
 }
 
+require_once("$ROOT/resources/php/classes/User.php");
+require_once("$ROOT/resources/php/classes/Part.php");
+
+$part = new Part();
+$part->constructWithId($part_id);
+
 $conn = getDBconnection();
 $stmt = $conn->prepare("select * from parts where idparts=?;");
 $stmt->bind_param("s",$part_id);
@@ -22,25 +28,28 @@ if ($row==NULL){
 $stmt->close();
 $conn->close();
 
-$part_name = $row['original_manufacturer']." | ".$row['original_name'];
-$part_description = "Описание демонстрационной детали. Это описание делается - создателем модели, автором наиболее популярной реализации, администрацией. Должно быть в формате html без js";
-$part_tags = $row['tags'];
+$part_name = $part->getOriginalManufacturer() . " | ". $part->getOriginalName();
+$part_description = /* $part->getDescription(); */ "Описание демонстрационной детали. Это описание делается - создателем модели, автором наиболее популярной реализации, администрацией. Должно быть в формате html без js";
+$part_tags = $part->getTags();
+$part_category = $part->getCategory();
+$tags_exploded = explode(";",$part_tags);
+
+$title =  "3DE | ".Part::convertIdToName($part_id);
+
+$imgsForGallery = array();
+foreach ($part->getImagesList() as $iid => $img){
+    $url = $part->getImagesFolder()."/".$img;
+    $id = $iid+1;
+    $imgsForGallery[] = "<img class='img_in_gallery' id='gImg$id' src='$url'>";
+}
 
 
 
+$realizations_all = $part->getRealizations();
 
-$conn = getDBconnection();
-$stmt = $conn->prepare("select * from realizations where is_realization_of = ?");
-$stmt->bind_param("s",$part_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$realizations_all = $result->fetch_all();
-$stmt->close();
-$conn->close();
 $number_of_realizations = sizeof($realizations_all);
 if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
-
-
+$makeref="/realization?edit&pid=$part_id&rid=new";
 
 ?>
 
@@ -51,7 +60,10 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/item/index.css">
+    <title><?=$title?></title>
 </head>
+
+
 <div class="content_wrapper">
     <?php include "$ROOT /resources/elements/header.php"; //include header 
     ?>
@@ -62,28 +74,44 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
 
             <div class="left_column">
                 <h1 class="part_header"><?= $part_name; ?></h1>
-                <img class="img_gallery" src="/resources/images/lukashenko.png">
-                <h6>Здесь должно быть схематичное изображение детали и средство просмотра 3д модели популярной реализации</h6>
+                <div class="img_gallery">
+                <?php 
+                if (sizeof($imgsForGallery)==0){
+                echo '<img class="img_in_gallery" id="gImg0" src="/resources/images/lukashenko.png">';
+                }
+                ?>
+                <?=implode('',$imgsForGallery)?>
+                </div>
+                <div class="gallery_conrols_box">
+                <button class="moveImage" onclick="prevImage()"><</button>
+                <button class="moveImage" onclick="nextImage()">></button>
+                </div>
 
             </div>
 
             <div class="right_column">
-                <a class="right_side_button" href="#">Скопировать ссылку</a>
-                <a class="right_side_button" href="#">Добавить реализацию</a>
+                <!-- <a class="right_side_button" href="#">Скопировать ссылку</a> -->
+                <a class="right_side_button" href="<?=$makeref?>">Добавить реализацию</a>
                 <a class="right_side_button" href="#">Сохранить в закладки</a>
-                <a class="right_side_button" href="#">Тех.документация от производителя</a>
+                <a class="right_side_button" href="#">Документация</a>
                 <a class="right_side_button" href="/item?edit&id=<?=$part_id?>">Редактировать</a>
 
                 <a class="right_side_button" href="#">Пожаловаться</a>
-                <?="тэги: $part_tags"?>
+                <?php
+                echo"<h3>тэги:";
+                foreach ($tags_exploded as $tag){
+                    echo "<span class='tag'><a href='/search?q=$tag'>$tag</a></span>";
+                }
+                echo "</h3>"
+                ?>
 
             </div>
 
         </div>
-        <p class="part_decription"><?= $part_description; ?></p>
+        <!-- <p class="part_decription"><?= $part_description; ?></p> -->
         <div class="realizations">
             <?php 
-            $makeref="/realization?edit&pid=$part_id&rid=new";
+            
             if($number_of_realizations==0){ echo "<h2 class='no_realizations'>Еще нет реализаций этой детали <a href=$makeref>добавить</a> </h2>";
             }else{echo "<h2 class='no_realizations'><a href=$makeref>добавить</a> реализацию</h2>";} ?>
 
@@ -94,29 +122,30 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
             foreach ($realizations_all as $rr){
 
                 
-                $rid = $rr[0];
-                $name = $rr[2];
-                $author = getUsernameById($rr[3]);
-                $rating = $rr[4];
-                $make_date = $rr[5];
-                $edit_date = $rr[6];
-                $rel_description = $rr[7];
+                $rid = $rr['idrealizations'];
+                $name = $rr['name'];
+                $author = User::convertIdToUsername($rr['author']);
+                $rating = $rr['rating'];
+                $make_date = $rr['make_date'];
+                $edit_date = $rr['edit_date'];
+                $rel_description = $rr['description'];
+                $authorUrl = User::getViewUrlWithId($rr['author']);
                 if ($rel_description==NULL){$rel_description="N/A";}
 
-                if (file_exists("$ROOT/upload/realizations/$rid.png")){
-                    $relimage_url="/upload/realizations/$rid.png";
-                }elseif (file_exists("$ROOT/upload/realizations/$rid.gif")){
-                    $relimage_url="/upload/realizations/$rid.gif";
+                if (file_exists("$ROOT/upload/realizations/$pid/$rid.png")){
+                    $relimage_url="/upload/realizations/$pid/$rid.png";
+                }elseif (file_exists("$ROOT/upload/realizations/$pid/$rid.gif")){
+                    $relimage_url="/upload/realizations/$pid/$rid.gif";
                 }else{
                     $relimage_url = "/resources/images/no_image.png";
                 }
-                $file_url = "/upload/realizations/$part_id-$rid.zip";
+                $file_url = "/realization/browse.php?rid=$rid&pid=$pid";
                 $editRelUrl ="/realization?edit&pid=1&rid=$rid";
             echo "
             <div class='realization' id=$rid>
                 <img class='realization_img' src=$relimage_url > 
                 <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
-                <a class='realization_author' href='/user?name=InTostor'>Автор: InTostor</a>
+                <a class='realization_author' href='$authorUrl'>Автор: $author</a>
                 <a href='$editRelUrl'> edit </a>
 
                 <div class='realization_vote'>
@@ -125,7 +154,7 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
                 <a class='rating_change' href='#'><span class='material-symbols-outlined vote'>expand_less</span></a>
                 </div>
 
-                <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.zip</a>
+                <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.файлы </a>
             </div>
             ";
                 }
@@ -142,3 +171,42 @@ if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
 </div>
 <?php include "$ROOT /resources/elements/footer.php"; //include footer 
 ?>
+<script>
+    var arr = document.getElementsByClassName("img_in_gallery");
+    var imgCount = arr.length;
+    var counter = 0;
+    hideUnhide();
+
+    function hideUnhide(){
+        for(var i=0; i<imgCount; i++){
+            var element = document.querySelector('img.'+arr[i].className+"#"+arr[i].id);
+            if (i!=counter){        
+                element.style.display = "none";   
+            }else{
+                element.style.display = "block"; 
+            }   
+        }
+        console.log(counter);
+    }
+
+
+
+    function nextImage(event) {
+        if (counter>=imgCount-1){
+            counter = 0;
+        }else{
+            counter=counter+1;
+        }
+        hideUnhide();
+    }
+
+    function prevImage(event) {
+        if (counter<=0){
+            counter = imgCount-1;
+        }else{
+            counter=counter-1;
+        }
+        hideUnhide();
+    }
+
+</script>

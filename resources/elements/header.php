@@ -8,6 +8,8 @@
         <div class="header_upper">
             <a href="/" class="logo">3DExchange</a>
             <nav class="header_nav">
+                <a class="navlink" href="item?add">+</a>
+
                 <a class="navlink" href="/account">акк</a>
             </nav>
         </div>
