@@ -384,14 +384,7 @@ class User {
     static function isLegitLogin(){
         $username_given = $_COOKIE["logged_as"];
         $password_given = $_COOKIE["logged_with"];
-        $row = Database::executeStmt('SELECT idusers FROM users where username = ? and password = ?',"ss",[$username_given, $password_given])[0];
-        if ($row!=null){
-            $is_legit = true;
-        }else{
-            $is_legit = false;
-        }
-    
-        return $is_legit;
+        return self::checkCredentials($username_given,$password_given);
     }
     static function getLoggedAs(){
         if (isset($_COOKIE['logged_as'])){
@@ -399,6 +392,18 @@ class User {
         }else{
             return "null";
         }
+    }
+    static function checkCredentials($username,$pass,$passCode="md5"){
+        if ($passCode=="raw"){
+            $pass = md5($pass);
+        }
+        $row = Database::executeStmt('SELECT idusers FROM users where username = ? and password = ?',"ss",[$username, $pass]);
+        if ($row!=null){
+            $is_legit = true;
+        }else{
+            $is_legit = false;
+        }
+        return $is_legit;
     }
 }
 ?>

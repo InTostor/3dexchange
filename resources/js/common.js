@@ -1,11 +1,14 @@
 function notavailable(){
+showMessage("Пока не доступно",2000);    
+}
+
+function showMessage(message,timeout=2000){
     var warn = document.createElement('h6');
-    warn.textContent = "Пока не доступно";
+    warn.textContent = message;
     warn.style.position = "fixed";
     warn.style.top = "40vh";
     warn.style.left = "40%";
     warn.style.fontSize = "50px";
     document.body.appendChild(warn);
-    setTimeout(function() {warn.remove();},2000);
-    
+    setTimeout(function() {warn.remove();},timeout);    
 }

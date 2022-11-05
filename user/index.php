@@ -32,4 +32,6 @@ $mood = $usr->getMood();
 $location = $usr->getLocation();
 getHTMLstuff();
 
+$title = "3DE | пользователь $username";
+
 include "page.php";

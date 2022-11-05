@@ -22,7 +22,7 @@ $rDescription="";
 
 if ($mode == "create"){
 echo "создание реализации для детали с id $pid";
-
+$title =  "3DE | создание реализации";
     if (isset($_POST['submit_values_change'])){
         $rel->author= User::convertUsernameToId(User::getLoggedAs());
         $rel->make_date=time();
@@ -35,7 +35,9 @@ echo "создание реализации для детали с id $pid";
     }
 
 }elseif($mode=="edit"){
-    echo "редактирование реализации id $rid для детали с id $pid";
+    $title =  "3DE | редактирование реализации";
+    echo "редактирование реализации id $rid для детали с id $pid<br>";
+    echo "<a href=\"item?view&id=$pid\" >вернуться</a>";
     $rel->constructWithId($rid);
     $rel->is_realization_of = $pid;
     $rName=$rel->getName();
@@ -77,6 +79,17 @@ echo "создание реализации для детали с id $pid";
 
 File::cleanTempShit("$ROOT/realization");
 ?>
+<!DOCTYPE HTML>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/item/index.css">
+    <title><?=$title?></title>
+</head>
+
+<body>
 
 
 <form action="" method="post">
@@ -111,13 +124,20 @@ echo'
 </form>
 ';
 echo "<b>$message</b><br>";
-
-echo '
+$currImg = $rel->getImageUrl();
+echo "
 <h3>изображение</h3>
-<form class="image" action="" method="post" enctype="multipart/form-data">
-<input type="file" accept="image/*" name="image" required>
-<input type="submit" name="submit_image_change" value="загрузить">
+<form class=\"image\" action=\"\" method=\"post\" enctype=\"multipart/form-data\">
+<img class=\"currentImagePreview\" width=\"50px\" src = $currImg >
+<input type=\"file\" accept=\"image/*\" name=\"image\" required>
+<input type=\"submit\" name=\"submit_image_change\" value=\"загрузить\">
 </form>
-';
+";
 }
 ?>
+
+
+
+
+</body>
+</html>

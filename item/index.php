@@ -14,6 +14,10 @@ if (isset($_GET['add'])){
     $pid = $_GET['id'];
     $mode="edit";
     include "actions.php";
+}elseif (isset($_GET['browse']) and isset($_GET['id'])){
+    $pid = $_GET['id'];
+    $mode="edit";
+    include "browse.php";
 }else{
     raiseHttpError(404);
     die();

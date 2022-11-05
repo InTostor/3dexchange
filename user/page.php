@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/user/index.css">
+    <title><?=$title?></title>
 </head>
 <div class="content_wrapper">
     <?php include "$ROOT /resources/elements/header.php"; //include header 

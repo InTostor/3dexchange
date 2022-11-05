@@ -1,22 +1,22 @@
 <?php 
-
+require_once "$ROOT/resources/php/classes/Database.php";
 // Поиск по базе данных, с использваонием тэгов, regex и пр.
 
 function getRels($q){
     $q="%$q%";
-$conn = getDBconnection();
-$stmt = $conn->prepare("select * from realizations where `idrealizations` like ? or `name` like ? or `description` like ? ");
-$stmt->bind_param("sss",$q,$q,$q);
-$stmt->execute();
-$result = $stmt->get_result();
+    $conn = getDBconnection();
+    $stmt = $conn->prepare("select * from realizations where `idrealizations` like ? or `name` like ? or `description` like ? ");
+    $stmt->bind_param("sss",$q,$q,$q);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-echo "<br>реализации";
-while ($data = mysqli_fetch_assoc($result)){
-echo'<pre>'; print_r($data); echo '</pre>';
-echo "<a href = /item?view&id=".$data['is_realization_of']."#".$data['idrealizations']."> перейти </a>";
-}
-$stmt->close();
-$conn->close();
+    echo "<br>реализации";
+    while ($data = mysqli_fetch_assoc($result)){
+        echo'<pre>'; print_r($data); echo '</pre>';
+        echo "<a href = /item?view&id=".$data['is_realization_of']."#".$data['idrealizations']."> перейти </a>";
+    }
+    $stmt->close();
+    $conn->close();
 }
 
 function getParts($q){

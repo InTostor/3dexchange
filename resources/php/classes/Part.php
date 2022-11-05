@@ -325,6 +325,11 @@ Class Part{
         return Database::executeStmt('select concat(original_manufacturer," / ",original_name) from parts where idparts = ?',"s",[$id])[0]['concat(original_manufacturer," / ",original_name)'];
     }
 
+    function getDocumentBrowser(){
+        $returnUrl = $this->getViewUrl();
+        FileBrowser::drawFileDownloader($this->getDocumentsList(),$this->getDocumentsFolder(),$returnUrl);
+    }
+
 
 }
 

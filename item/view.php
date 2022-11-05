@@ -11,6 +11,7 @@ if ($part_id==NULL){
 
 require_once("$ROOT/resources/php/classes/User.php");
 require_once("$ROOT/resources/php/classes/Part.php");
+require_once("$ROOT/resources/php/classes/Realization.php");
 
 $part = new Part();
 $part->constructWithId($part_id);
@@ -29,11 +30,9 @@ $stmt->close();
 $conn->close();
 
 $part_name = $part->getOriginalManufacturer() . " | ". $part->getOriginalName();
-$part_description = /* $part->getDescription(); */ "Описание демонстрационной детали. Это описание делается - создателем модели, автором наиболее популярной реализации, администрацией. Должно быть в формате html без js";
 $part_tags = $part->getTags();
 $part_category = $part->getCategory();
 $tags_exploded = explode(";",$part_tags);
-
 $title =  "3DE | ".Part::convertIdToName($part_id);
 
 $imgsForGallery = array();
@@ -69,7 +68,6 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
     ?>
     <div class="container">
 
-
         <div class="description_block">
 
             <div class="left_column">
@@ -92,90 +90,76 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
             <div class="right_column">
                 <!-- <a class="right_side_button" href="#">Скопировать ссылку</a> -->
                 <a class="right_side_button" href="<?=$makeref?>">Добавить реализацию</a>
-                <a class="right_side_button" href="#">Сохранить в закладки</a>
-                <a class="right_side_button" href="#">Документация</a>
+                <!-- <a class="right_side_button" href="#">Сохранить в закладки</a> -->
+                <a class="right_side_button" href="/item/browse.php?id=<?=$pid?>">Документация</a>
                 <a class="right_side_button" href="/item?edit&id=<?=$part_id?>">Редактировать</a>
 
                 <a class="right_side_button" href="#">Пожаловаться</a>
+                <h3>Тэги: </h3>
+                <div class="tags">
                 <?php
-                echo"<h3>тэги:";
                 foreach ($tags_exploded as $tag){
-                    echo "<span class='tag'><a href='/search?q=$tag'>$tag</a></span>";
-                }
-                echo "</h3>"
+                    echo "<p><span class='tag'><a href='/search?q=$tag'>$tag</a></span></p>";}                
                 ?>
-
-            </div>
-
-        </div>
-        <!-- <p class="part_decription"><?= $part_description; ?></p> -->
-        <div class="realizations">
-            <?php 
-            
-            if($number_of_realizations==0){ echo "<h2 class='no_realizations'>Еще нет реализаций этой детали <a href=$makeref>добавить</a> </h2>";
-            }else{echo "<h2 class='no_realizations'><a href=$makeref>добавить</a> реализацию</h2>";} ?>
-
-            <?php
-
-            if ($number_of_realizations!=0){
-
-            foreach ($realizations_all as $rr){
-
-                
-                $rid = $rr['idrealizations'];
-                $name = $rr['name'];
-                $author = User::convertIdToUsername($rr['author']);
-                $rating = $rr['rating'];
-                $make_date = $rr['make_date'];
-                $edit_date = $rr['edit_date'];
-                $rel_description = $rr['description'];
-                $authorUrl = User::getViewUrlWithId($rr['author']);
-                if ($rel_description==NULL){$rel_description="N/A";}
-
-                if (file_exists("$ROOT/upload/realizations/$pid/$rid.png")){
-                    $relimage_url="/upload/realizations/$pid/$rid.png";
-                }elseif (file_exists("$ROOT/upload/realizations/$pid/$rid.gif")){
-                    $relimage_url="/upload/realizations/$pid/$rid.gif";
-                }else{
-                    $relimage_url = "/resources/images/no_image.png";
-                }
-                $file_url = "/realization/browse.php?rid=$rid&pid=$pid";
-                $editRelUrl ="/realization?edit&pid=1&rid=$rid";
-            echo "
-            <div class='realization' id=$rid>
-                <img class='realization_img' src=$relimage_url > 
-                <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
-                <a class='realization_author' href='$authorUrl'>Автор: $author</a>
-                <a href='$editRelUrl'> edit </a>
-
-                <div class='realization_vote'>
-                <a class='rating_change' href='#'><span class='material-symbols-outlined vote'>expand_more</span></a>
-                $rating
-                <a class='rating_change' href='#'><span class='material-symbols-outlined vote'>expand_less</span></a>
                 </div>
-
-                <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.файлы </a>
             </div>
-            ";
-                }
-
-            }
-
-            ?>
 
         </div>
+        
+        <div class="realizations">
+<?php
 
+if($number_of_realizations==0){ 
+    echo "<h2 class='no_realizations'>Еще нет реализаций этой детали <a href=$makeref>добавить</a> </h2>";
+}else{
+    echo "<h2 class='no_realizations'><a href=$makeref>добавить</a> реализацию</h2>";
+} 
+
+if ($number_of_realizations!=0){
+foreach ($realizations_all as $rr){
+    
+    $rid = $rr['idrealizations'];
+    $name = $rr['name'];
+    $author = User::convertIdToUsername($rr['author']);
+    $rating = $rr['rating'];
+    $make_date = $rr['make_date'];
+    $edit_date = $rr['edit_date'];
+    $rel_description = $rr['description'];
+    $authorUrl = User::getViewUrlWithId($rr['author']);
+    if ($rel_description==NULL){$rel_description="N/A";}
+    $relimage_url = Realization::getImageUrlWithIds($pid,$rid);
+    $file_url = "/realization/browse.php?rid=$rid&pid=$pid";
+    $editRelUrl ="/realization?edit&pid=1&rid=$rid";
+    echo "
+    <div class='realization' id=$rid>
+        <img class='realization_img' src=$relimage_url > 
+        <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
+        <a class='realization_author' href='$authorUrl'>Автор: $author</a>
+        <a href='$editRelUrl'> edit </a>
+        <div class='realization_vote'>
+        <button class='rating_change' id='decrease_$rid' onclick='decreaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_more</span></button>
+        <p id=rating$rid>$rating</p>
+        <button class='rating_change' id='increase_$rid' onclick='increaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_less</span></button>
+        </div>
+        <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.файлы </a>
+    </div>
+    ";
+}}
+?>
+
+        </div>
         <div class="break"></div>
-
     </div>
 </div>
-<?php include "$ROOT /resources/elements/footer.php"; //include footer 
-?>
+
+
+<?php include "$ROOT /resources/elements/footer.php"; //include footer ?>
+</body>
+
 <script>
     var arr = document.getElementsByClassName("img_in_gallery");
     var imgCount = arr.length;
     var counter = 0;
-    hideUnhide();
 
     function hideUnhide(){
         for(var i=0; i<imgCount; i++){
@@ -188,8 +172,7 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
         }
         console.log(counter);
     }
-
-
+    hideUnhide();
 
     function nextImage(event) {
         if (counter>=imgCount-1){
@@ -209,4 +192,48 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
         hideUnhide();
     }
 
+    function increaseRating(element,pid, rid){
+        changeRating(element,pid,rid,1)
+    }
+    function decreaseRating(element,pid, rid){
+        changeRating(element,pid,rid,-1)
+    }
+
+    function changeRating(element,pid,rid,rating){
+        var xmlhttp = new XMLHttpRequest();
+        var buttonId = element.id
+        var ratingStrId = buttonId.replace("increase_","").replace("decrease_","")
+        
+        var POSTq = "pid=" + pid + "&rid="+rid+"&val="+rating+"&auth=cookie"
+        var response;
+        var success;
+        var newVal;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/v1/changeRelRating.php', true);
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            response = JSON.parse(xhr.response)
+            success = response.success
+            newVal = response.new_value
+            if (success==true){
+                var ratingTxt = document.getElementById('rating'+ratingStrId)
+                ratingTxt.innerHTML = newVal
+            }else{
+                showMessage('только для зарегестрированных пользователей');
+            }
+        }};
+
+        xhr.send(POSTq)
+    }
+
+
+
+
+
+
+
 </script>
+
+</html>

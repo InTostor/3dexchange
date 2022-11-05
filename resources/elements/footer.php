@@ -1,11 +1,12 @@
 <?php
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
 require_once "$ROOT/settings/settings.php";
-require_once "$ROOT/resources/php/common.php";
 
-$secret_message = " за руку";
+require_once "$ROOT/resources/php/classes/User.php";
 
-if (isLogged() and getLoggedAs()=="Hold4n"){
+$secret_message = "";
+
+if (User::isLogged() and User::getLoggedAs()=="Hold4n"){
 $secret_message = "INC30LAg0YfQu9C10L0=";
 }
 ?>

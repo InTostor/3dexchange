@@ -1,9 +1,16 @@
+@font-face {
+    font-family: "Ubuntu";
+    src: url("/resources/Ubuntu-Regular.ttf");
+}
+
 * {
     /* debug only */
     /* outline: 1px solid red; */
     margin:0;
     transition:all ease 0.25s;
-    font-family: Verdana, sans-serif;
+
+    font-family: 'Ubuntu', sans-serif;
+    
 }
 
 
@@ -20,7 +27,9 @@ a{
     text-decoration: none;
 }
 
-input {outline:none;}
+input {
+    outline:none;
+}
 
 body {
     margin: 0;

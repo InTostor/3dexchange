@@ -21,6 +21,15 @@ Class Realization{
         $this->id=$rid;
     }
 
+    function isExists(){
+        $res = implode('',Database::executeStmt('SELECT EXISTS(SELECT * FROM realizations where idrealizations=?)',"s",[$this->id])[0]);
+        if ($res==0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     function getPartId(){
         if (isset($this->is_realization_of)){
             return $this->is_realization_of;
@@ -133,10 +142,13 @@ Class Realization{
         File::moveAndRenameFile($image,$newFile);
     }
 
-    function register(){
+    function getImageUrl($isSystemRoot = false){
+        return self::getImageUrlWithIds($this->is_realization_of,$this->id,$isSystemRoot);
+    }
 
-        if (!isset($this->id) and isset($this->is_realization_of)){
-          
+
+    function register(){
+        if (!isset($this->id) and isset($this->is_realization_of)){          
             $this-> id = Database::executeStmt(
                 "insert into realizations (`is_realization_of`,`name`,`author`,`make_date`,`description`) VALUES (?,?,?,?,?);",
                 "sssss",
@@ -149,11 +161,21 @@ Class Realization{
                 ]
             );
             File::mkdir($this->getFolder(true));
-
         }else{
             return false;
         }
+    }
 
+
+    static function getImageUrlWithIds($pid,$rid,$isSystemRoot = false){
+        $rt = $_SERVER['DOCUMENT_ROOT'];
+        $REALIZATIONS_STORAGE=config::get('realizations_storage');
+        $url = "$REALIZATIONS_STORAGE/$pid/$rid.png";
+        if ($isSystemRoot){
+            return "$rt/$url";
+        }else{
+            return "/$url";
+        }
     }
 
 
