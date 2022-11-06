@@ -8,6 +8,20 @@ require_once("$ROOT/resources/php/classes/Settings.php");
 $pid = $_GET['pid'];
 $rid = $_GET['rid'];
 
+session_set_cookie_params(0);
+session_start();
+if (isset($_SESSION['ClassUser'])){
+$usr = $_SESSION['ClassUser'];
+}else{
+    $usr = new User();
+}
+
+$canUserEdit = ($usr->checkPermission('realization.edit.*') and $usr->isAuthorOf("realization",$rid)) or $usr->checkPermission('realization.edit.any');
+if (!$canUserEdit){
+    echo "no permission";
+    die();
+}
+
 if ($rid=="new"){
     $mode="create";
 }else{

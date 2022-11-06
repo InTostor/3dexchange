@@ -7,7 +7,8 @@ require_once("$ROOT/settings/settings.php");
 require_once("$ROOT/resources/php/classes/Errors.php");
 require_once("$ROOT/resources/php/classes/Realization.php");
 
-$rel = new Realization();
-$rel->id = 1;
-$rel->is_realization_of=1;
-$rel->getDocumentBrowser();
+$usr = new User();
+$usr->consturctWithCurrentLogin();
+echo "<pre>";
+echo var_dump($usr->isAuthorOf("realization",1));
+echo "</pre>";

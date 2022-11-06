@@ -138,15 +138,20 @@
     width:40%;
 }
 .realization_author{
+    font-size: 15px;
     margin: auto;
 }
 .realization_download{
     font-size: 24px;
     text-align: center;
     margin: auto;
-    border:rebeccapurple solid 3px;
+
     border-radius: 10px;
     padding: 10px 20px 10px 20px;
+}
+.realization_download:hover{
+    border-radius: 10px;
+    box-shadow:0 0 30px 1px rgba(0, 0, 0, 0.479);
 }
 
 .realization_vote{
@@ -170,5 +175,27 @@
     margin:3px;
     border-radius: 4px;
     box-shadow:0 0 30px 1px rgba(0, 0, 0, 0.479);
-    color:
+}
+
+.rating_change{
+    border:none;
+    background-color:transparent;
+    border-radius: 10px;
+    padding:10px;
+    margin:10px;
+    /* box-shadow:  0 0 3px 1px rgba(0, 0, 0, 0.479); */
+}
+
+.rating_change:hover{
+    box-shadow: 0 0 30px 1px rgba(0, 0, 0, 0.479);    
+}
+
+.rating{
+    align-content: center;
+    text-align: center;
+    vertical-align: middle;
+    display: inline;
+    height: fit-content;
+    margin:auto;
+    font-size: 25px;
 }

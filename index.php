@@ -15,7 +15,7 @@ getHTMLstuff();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <title>3DE | Главная</title>
-
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
 <div class="content_wrapper">
 <?php include "$ROOT /resources/elements/header.php"; //include header ?>

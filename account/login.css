@@ -2,7 +2,9 @@ body {
     height:100vh;
 }
 
-
+a.reg{
+    color:black;
+}
 
 .form {
     position: relative;

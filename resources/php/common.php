@@ -90,6 +90,7 @@ function getHTMLstuff(){
     echo '<link rel="stylesheet" href="/resources/elements/header.css">';
     echo '<link rel="stylesheet" href="/resources/elements/footer.css">';
     echo '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />';
+    echo '<link href="https://fonts.googleapis.com/icon?family=Material+Icons"rel="stylesheet">';
 }
 
 

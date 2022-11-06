@@ -7,7 +7,7 @@
     /* debug only */
     /* outline: 1px solid red; */
     margin:0;
-    transition:all ease 0.25s;
+    transition:all ease 0.15s;
 
     font-family: 'Ubuntu', sans-serif;
     
@@ -21,10 +21,25 @@
   'GRAD' 200,
   'opsz' 48
 }
+.material-icons {
+    font-family: 'Material Icons';
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 800,
+    'GRAD' 200,
+    'opsz' 48
+  }
 
 
 a{
     text-decoration: none;
+    color:rgb(101, 122, 180);
+}
+a:visited{
+    color:rgb(101, 122, 180);
+}
+a:hover{
+    color:rgb(180, 159, 101);
 }
 
 input {

@@ -12,6 +12,9 @@ if ($part_id==NULL){
 require_once("$ROOT/resources/php/classes/User.php");
 require_once("$ROOT/resources/php/classes/Part.php");
 require_once("$ROOT/resources/php/classes/Realization.php");
+$badRatingColor = "rgb(130,50,50)";
+$goodRatingColor = "rgb(50,130,50)";
+
 
 $part = new Part();
 $part->constructWithId($part_id);
@@ -117,7 +120,7 @@ if($number_of_realizations==0){
 
 if ($number_of_realizations!=0){
 foreach ($realizations_all as $rr){
-    
+
     $rid = $rr['idrealizations'];
     $name = $rr['name'];
     $author = User::convertIdToUsername($rr['author']);
@@ -130,15 +133,24 @@ foreach ($realizations_all as $rr){
     $relimage_url = Realization::getImageUrlWithIds($pid,$rid);
     $file_url = "/realization/browse.php?rid=$rid&pid=$pid";
     $editRelUrl ="/realization?edit&pid=1&rid=$rid";
+    $canUserEdit = ($usr->checkPermission('realization.edit.*') and $usr->isAuthorOf("realization",$rid)) or $usr->checkPermission('realization.edit.any');
+    if ($rating<0){
+        $ratingColor = $badRatingColor;
+    }else{
+        $ratingColor = $goodRatingColor;
+    }
+    
     echo "
     <div class='realization' id=$rid>
-        <img class='realization_img' src=$relimage_url > 
+        <img class='realization_img' src=$relimage_url>
+    ";
+    if( $canUserEdit ){echo "<a href='$editRelUrl'> <span class='material-icons'>edit</span> </a>";}else{echo "<div style='width:30px'></div>";}
+    echo "
         <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
         <a class='realization_author' href='$authorUrl'>Автор: $author</a>
-        <a href='$editRelUrl'> edit </a>
         <div class='realization_vote'>
         <button class='rating_change' id='decrease_$rid' onclick='decreaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_more</span></button>
-        <p id=rating$rid>$rating</p>
+        <p style='color: $ratingColor' class=\"rating\" id=rating$rid>$rating</p>
         <button class='rating_change' id='increase_$rid' onclick='increaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_less</span></button>
         </div>
         <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.файлы </a>
@@ -151,6 +163,9 @@ foreach ($realizations_all as $rr){
         <div class="break"></div>
     </div>
 </div>
+
+
+
 
 
 <?php include "$ROOT /resources/elements/footer.php"; //include footer ?>
@@ -219,7 +234,12 @@ foreach ($realizations_all as $rr){
             newVal = response.new_value
             if (success==true){
                 var ratingTxt = document.getElementById('rating'+ratingStrId)
-                ratingTxt.innerHTML = newVal
+                ratingTxt.innerHTML = ' '+newVal+' '
+                if (newVal<0){
+                    ratingTxt.style.color = "<?=$badRatingColor?>"
+                }else{
+                    ratingTxt.style.color = "<?=$goodRatingColor?>"
+                }
             }else{
                 showMessage('только для зарегестрированных пользователей');
             }

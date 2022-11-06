@@ -19,7 +19,7 @@ class User {
     public $description_md;
     public $mood;
     public $register_date;
-
+    public $permissions;
 
 // pack/unpack class for transfer
 
@@ -141,10 +141,39 @@ class User {
         }
     }
 
+    function getPermissions(){
 
+        if (isset($this->id)){
+            if (!isset($this->permissions)){
+                $pStr =  Database::executeStmt(
+                'SELECT permissions FROM 3dexchange.usperm_groups where `key` = (select access_level from users where idusers = ?)',
+                "s",
+                [$this->id]
+                )[0]['permissions'];
+                return explode(';',$pStr);
+            }else{
+                return $this->permissions;
+            }
+        }else{
+            $pStr =  Database::executeStmt(
+                'SELECT permissions FROM 3dexchange.usperm_groups where `key` = ?',
+                "s",
+                [3]
+                )[0]['permissions'];
+                return explode(';',$pStr);
+        }
 
-    function checkPermisiion(string $permission){
-        return true;
+    }
+
+    function checkPermission(string $permission){
+        $perms = $this->getPermissions();
+        foreach ($perms as $perm){
+            if (preg_match_all("/$perm/m", $permission)>0 or preg_match_all("/$permission/m","$perm")>0){
+                return true;
+            }
+        }
+        return false;
+        
     }
 
     function checkPassword($pass_md5){
@@ -404,6 +433,22 @@ class User {
             $is_legit = false;
         }
         return $is_legit;
+    }
+    function isAuthorOf($item,$id){
+        if ($item == "part"){
+            $query = 'SELECT EXISTS(SELECT idparts FROM parts where author = ? and idparts = ?)';
+            $sel = 'EXISTS(SELECT idparts FROM parts where author = ? and idparts = ?)';
+            $proceed = true;
+        }elseif($item=="realization"){
+            $query = 'SELECT EXISTS(SELECT idrealizations FROM realizations where author = ? and idrealizations = ?)';
+            $sel = 'EXISTS(SELECT idrealizations FROM realizations where author = ? and idrealizations = ?)';
+            $proceed = true;
+        }
+        if ($proceed and Database::executeStmt($query,"ss",[$this->id,$id])[0][$sel]==1){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
 ?>
