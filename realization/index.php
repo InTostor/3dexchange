@@ -16,16 +16,20 @@ $usr = $_SESSION['ClassUser'];
     $usr = new User();
 }
 
-$canUserEdit = ($usr->checkPermission('realization.edit.*') and $usr->isAuthorOf("realization",$rid)) or $usr->checkPermission('realization.edit.any');
-if (!$canUserEdit){
-    echo "no permission";
-    die();
-}
+
+
 
 if ($rid=="new"){
     $mode="create";
+    $canUserEdit = $usr->checkPermission('realization.create');
 }else{
     $mode="edit";
+    $canUserEdit = ($usr->checkPermission('realization.edit.*') and $usr->isAuthorOf("realization",$rid)) or $usr->checkPermission('realization.edit.any');
+}
+
+if (!$canUserEdit){
+    echo "no permission";
+    die();
 }
 
 $message="";
