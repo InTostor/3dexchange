@@ -24,9 +24,9 @@ if ($userNegativeRating == ""){$userNegativeRating=0;}
         <div class="row">
             <div class="avatar">
                 <img class="avatar_img" src=<?= "$avatar_url" ?>>
-                <h1><?= $username ?></h1>
-                <h3><?= $location ?></h3>
-                <h4><?= $mood ?></h4>
+                <h1><span class="material-symbols-outlined smallIcon">handyman</span> <?= $username ?></h1>
+                <h3><span class="material-symbols-outlined smallIcon">location_on</span> <?= $location ?></h3>
+                <h4><span class="material-symbols-outlined smallIcon">cloud</span> <?= $mood ?></h4>
                 <div class="rating_div">
                     <h2 class="rating_t">Рейтинг </h2>
                     <h2 style="color:rgb(120,50,50)" class="rating"><?=$userNegativeRating?></h2>

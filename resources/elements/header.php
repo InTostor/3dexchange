@@ -27,8 +27,8 @@ $canMakePart = $usr->checkPermission('part.create');
         </div>
         <div class="header_bottom">
             <form action="/search" method="get" class="search">
-                <input name="q" class="search_field" type="search" placeholder="производитель/id/тип/название/предназначение">
-                <input name="submit" class="search_submit" type="button" type="submit" onclick="notavailable()" value="/искать/">
+                <input name="q" class="search_field" type="search" required placeholder="производитель/id/тип/название/предназначение">
+                <input name="submit" class="search_submit" type="submit" type="submit" value="/искать/">
                 <!-- add this type="submit" -->
             </form>
         </div>
