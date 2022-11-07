@@ -5,6 +5,9 @@ $userNegativeRating = Database::executeStmt('SELECT sum(rating) from realization
 if ($userPositiveRating == ""){$userPositiveRating=0;}
 if ($userNegativeRating == ""){$userNegativeRating=0;}
 
+$userPage=$user_id==User::convertUsernameToId(User::getLoggedAs());
+
+
 ?>
 
 <!DOCTYPE HTML>
@@ -35,6 +38,7 @@ if ($userNegativeRating == ""){$userNegativeRating=0;}
                 </div>
             </div>
             <p class="description"><?= $description_md ?></p>
+            <?php if($userPage){echo '<a class="accountEdit" href="/account/actions.php"><span class="material-icons">edit</span></a>';}?>
 
 
 

@@ -20,15 +20,17 @@ $canMakePart = $usr->checkPermission('part.create');
                 3DExchange</a>
             </div>
             <nav class="header_nav">
-                <?php if($canMakePart){echo'<a class="navlink" id="addPart" href="item?add">+</a>';} ?>
+                <?php if($canMakePart){echo'<a class="navlink" id="addPart" href="item?add"><span class="material-icons addPart">post_add</span></a>';} ?>
 
-                <a class="navlink" id="accLink" href="/account">акк</a>
+                <a class="navlink" id="accLink" href="/account"><span class="material-icons account">account_circle</span></a>
             </nav>
         </div>
         <div class="header_bottom">
             <form action="/search" method="get" class="search">
                 <input name="q" class="search_field" type="search" required placeholder="производитель/id/тип/название/предназначение">
-                <input name="submit" class="search_submit" type="submit" type="submit" value="/искать/">
+                <button name="submit" class="search_submit" type="submit" type="submit" value="/искать/">
+                    <span class="material-icons account">search</span>
+                </button>
                 <!-- add this type="submit" -->
             </form>
         </div>

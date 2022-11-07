@@ -12,6 +12,15 @@ footer {
 
 }
 
+.material-icons {
+    font-family: 'Material Icons';
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 800,
+    'GRAD' 200,
+    'opsz' 48
+}
+
 .footer_inner {
     min-height: fit-content;
     

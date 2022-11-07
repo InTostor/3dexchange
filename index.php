@@ -32,11 +32,11 @@ getHTMLstuff();
         <a href="/search?category=wearable_electronics" class="item i4">Носимая электроника</a>
         <a href="/search?category=toys_rc" class="item i5">Игрушки и РУ модели</a>
         <a href="/search?category=photo_equipment" class="item i7">фототехника</a>
-        <a href="/search?category=none" class="item i8">памятники ссср</a>
+        <!-- <a href="/search?category=none" class="item i8">памятники ссср</a>
         <a href="/search?category=none" class="item i9">акультисткие тотемы</a>
         <a href="/search?category=none" class="item i10">космические аппараты</a>
         <a href="/search?category=none" class="item i11">дореволюционная авиация</a>
-        <a href="/search?category=none" class="item i12">инопланетные технологии</a>
+        <a href="/search?category=none" class="item i12">инопланетные технологии</a> -->
     </div>
 
 
