@@ -1,5 +1,6 @@
 <?php
-
+$ROOT = $_SERVER['DOCUMENT_ROOT'];
+require_once "$ROOT/resources/php/classes/User.php";
 session_start();
 if (isset($_SESSION['ClassUser'])){
 $usr = $_SESSION['ClassUser'];

@@ -19,3 +19,15 @@
 .row{
     height:50vh;
 }
+
+.rating_div{
+    margin:10px 10px 10px 0;
+    display: flex;
+    flex-direction: row;
+}
+.rating_breaker{
+    margin: 0 10px 0 10px;
+}
+.rating_t{
+    margin: 0 10px 0 0;
+}
