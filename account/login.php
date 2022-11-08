@@ -1,58 +1,3 @@
-<?php
-
-$ROOT = $_SERVER['DOCUMENT_ROOT'];
-require_once "$ROOT/settings/settings.php";
-require_once "$ROOT/resources/php/common.php";
-require_once("$ROOT/resources/php/classes/User.php");
-
-$message="";
-
-$username_given="";
-$password_given="";
-
-if (isset($_POST["login"])){
-$username_given=$_POST['username'];
-$password_given=$_POST['password'];
-
-
-$conn = new mysqli($db_server, $db_username, $db_password, $db_database);
-$stmt = $conn->prepare('SELECT idusers FROM users where username = ? and password = ?');
-$stmt->bind_param("ss", $username_given, md5($password_given));
-$stmt->execute();
-$result = $stmt->get_result();
-$row = $result->fetch_assoc();
-
-if ( $row!=null ){
-    $message="found";
-    rememberUser($username_given,md5($password_given));
-    $usr = new User();
-    $usr->constructWithUsername($username_given);
-    echo "username class".$usr->username;
-    session_set_cookie_params(0);
-    session_start();
-    $_SESSION['ClassUser'] = $usr;
-    header("Refresh:0");
-}else{
-    $message="not_found";
-}
-
-$stmt->close();
-$conn->close();
-
-}
-
-if(isset($_COOKIE["logged_as"])) {
-
-
-}
-
-
-
-
-
-
-?>
-
 
 <!DOCTYPE HTML>
 <html lang="ru">
@@ -62,9 +7,53 @@ if(isset($_COOKIE["logged_as"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/resources/css/common.css">
     <link rel="stylesheet" href="/account/login.css">
+    <script src="/resources/js/common.js"></script>
+    <title>Вход в аккаунт</title>
 </head>
 
 <body>
+
+<?php
+
+$ROOT = $_SERVER['DOCUMENT_ROOT'];
+require_once "$ROOT/settings/settings.php";
+require_once "$ROOT/resources/php/common.php";
+require_once("$ROOT/resources/php/classes/User.php");
+
+setcookie("came_from",$_SERVER['HTTP_REFERER'], time()+180, '/'); //allows to move user at 45 line (because of POST requests on page)
+
+$message="";
+
+$username_given="";
+$password_given="";
+
+if (isset($_POST["login"])){
+    $username_given=$_POST['username'];
+    $password_given=$_POST['password'];
+
+    $canLogin = User::checkCredentials($username_given,$password_given,'raw');
+
+    if ( $canLogin){
+        $message="found"; // not good solution
+        User::remember($username_given,md5($password_given));
+        $usr = new User();
+        $usr->constructWithUsername($username_given);
+        session_set_cookie_params(0);
+        session_start();
+        $_SESSION['ClassUser'] = $usr;
+        echo "<script>showMessage('Вход выполнен',2000)</script>";
+        header("Refresh:2; url=".$_COOKIE['came_from']); //move user to place,where he came from
+    }else{
+        $message="not_found";
+    }
+}
+
+
+
+?>
+
+
+
 
 <div class="form">
     <div class="form_upper">

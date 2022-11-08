@@ -8,6 +8,7 @@ $usr = $_SESSION['ClassUser'];
     $usr = new User();
 }
 $canMakePart = $usr->checkPermission('part.create');
+$isUserLogged = User::isLogged();
 
 ?>
 
@@ -21,8 +22,8 @@ $canMakePart = $usr->checkPermission('part.create');
             </div>
             <nav class="header_nav">
                 <?php if($canMakePart){echo'<a class="navlink" id="addPart" href="item?add"><span class="material-icons addPart">post_add</span></a>';} ?>
-
                 <a class="navlink" id="accLink" href="/account"><span class="material-icons account">account_circle</span></a>
+                <?php if($isUserLogged){echo'<a class="navlink" id="addPart" href="/account/logout.php"><span class="material-icons addPart">logout</span></a>';} ?>
             </nav>
         </div>
         <div class="header_bottom">

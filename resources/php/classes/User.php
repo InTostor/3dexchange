@@ -434,6 +434,31 @@ class User {
         }
         return $is_legit;
     }
+
+    static function remember($username, $pass, $passCode="md5",$method="cookie"){
+        if ($passCode=="raw"){
+            $pass = md5($pass);
+        }
+        if ($method=="cookie"){
+            setcookie("logged_as",$username, time()+60*60*24*3, '/');
+            setcookie("logged_with",$pass, time()+60*60*24*3, '/');
+        }
+
+    }
+    static function forget($username=null, $pass=null, $passCode="md5",$method="cookie"){
+        if ($passCode=="raw"){
+            $pass = md5($pass);
+        }
+        if ($method=="cookie"){
+            session_start();
+            setcookie("logged_as","null", time()+60*60*24*3, '/');
+            setcookie("logged_with","null", time()+60*60*24*3, '/');
+            $_SESSION['ClassUser'] = null ;
+            session_destroy();
+        }
+
+    }
+
     function isAuthorOf($item,$id){
         if ($item == "part"){
             $query = 'SELECT EXISTS(SELECT idparts FROM parts where author = ? and idparts = ?)';

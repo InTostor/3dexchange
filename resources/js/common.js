@@ -9,6 +9,7 @@ function showMessage(message,timeout=2000){
     warn.style.top = "40vh";
     warn.style.left = "40%";
     warn.style.fontSize = "50px";
+    warn.style.zIndex=999;
     document.body.appendChild(warn);
     setTimeout(function() {warn.remove();},timeout);    
 }

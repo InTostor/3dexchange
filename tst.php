@@ -10,5 +10,5 @@ require_once("$ROOT/resources/php/classes/Realization.php");
 $usr = new User();
 $usr->consturctWithCurrentLogin();
 echo "<pre>";
-echo var_dump($usr->isAuthorOf("realization",1));
+echo var_dump($usr->checkCredentials('InTostor','Cummunism','raw'));
 echo "</pre>";
