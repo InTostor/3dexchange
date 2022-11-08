@@ -1,6 +1,9 @@
 <?php
-
+$ROOT = $_SERVER['DOCUMENT_ROOT'];
+require_once "$ROOT/resources/php/classes/User.php";
 // there should be loading of required script for this situation (no account/logged/other)
+// $usrPage = "acc"
+// header("Location:".$usrPage);
 
 $is_logged = false;
 $is_logged = false;
