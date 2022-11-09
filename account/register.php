@@ -2,22 +2,43 @@
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
 require "$ROOT/settings/settings.php";
 require "$ROOT/resources/php/common.php";
+require_once "$ROOT/resources/php/classes/User.php";
+require_once "$ROOT/resources/php/classes/HyperText.php";
+require_once "$ROOT/resources/php/classes/Errors.php";
 
+$usr = User::extractFromSession();
+$usrExists = $usr->isExists();
 
-$can_register=false;
-
-if (isset($_POST['register'])){
-$username_given=$_POST['username'];
-$password_given=$_POST['password'];
-$email_given=nullIfNone($_POST['email']);
-$telephone_given=nullIfNone($_POST['tel']);
-$location_given=nullIfNone($_POST['location']);
-
-$can_register = !isUserExists($username_given);
-    
+if ($usrExists){
+    Errors::raiseCustomError("logged");
+    die();
 }
 
+$can_register=!$usrExists; // for future register challenge
 
+// if (isset($_POST['register'])){
+//     $username_given=$_POST['username'];
+//     $password_given=$_POST['password'];
+//     $email_given=nullIfNone($_POST['email']);
+//     $telephone_given=nullIfNone($_POST['tel']);
+//     $location_given=nullIfNone($_POST['location']);
+//     $can_register = !$usrExists;
+// }
+
+if (isset($_POST['register']) & $can_register){
+
+    $usr->username = $_POST['username'];
+    $usr->password = md5($_POST['password']);
+    $usr->email = $_POST['email'];
+    $usr->phone_number = $_POST['tel'];
+    $usr->location = $_POST['location'];
+    $usrExists = $usr->isExists();
+}
+
+// final pre register check
+if ($can_register and isset($_POST['register']) and !$usrExists ){
+    $usr->register();
+}
 
 function nullIfNone($chk){
     if ($chk==""){
@@ -28,22 +49,22 @@ function nullIfNone($chk){
 }
 
 
-if ($can_register ){
-$conn = getDBconnection();
-$stmt = $conn->prepare('INSERT INTO users (username, password, register_date, email, phone_number,location)
-VALUES (?, ?, ?, ?, ?, ?); ');
-$stmt->bind_param("ssisss", $username_given, md5($password_given),time(),$email_given,$telephone_given,$location_given);
-$stmt->execute();
-$stmt->close();
-$conn->close();
+if ($can_register and false){
+    $conn = getDBconnection();
+    $stmt = $conn->prepare('INSERT INTO users (username, password, register_date, email, phone_number,location)
+    VALUES (?, ?, ?, ?, ?, ?); ');
+    $stmt->bind_param("ssisss", $username_given, md5($password_given),time(),$email_given,$telephone_given,$location_given);
+    $stmt->execute();
+    $stmt->close();
+    $conn->close();
 
-rememberUser($username_given,md5($password_given));
+    rememberUser($username_given,md5($password_given));
 
-header('location: /account/welcome.php');
+    header('location: /account/welcome.php');
 }
 
 
-echo $can_register? ' можно ' : ' нельзя ';
+// echo $can_register? ' можно ' : ' нельзя ';
 ?>
 
 
@@ -80,7 +101,7 @@ echo $can_register? ' можно ' : ' нельзя ';
                 <p>нажимая кнопку "зарегестрироваться", вы принимаете: <a href="/documents/EULA.txt">пользовательское соглашение</a>,<br>
                 <a href="/documents/rules.txt">правила</a><br> и <a href="/documents/privacy_policy">политику конфиденциальности</a></p>
                 <?php
-                    if (!$can_register and isset($_POST['register']) ){
+                    if (!$can_register and isset($_POST['register']) or $usrExists ){
                         echo "<h3 style='color:red;'>Невозможно зарегестрироваться: этот пользователь уже существует </h3>";
                     }
 

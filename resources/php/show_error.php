@@ -41,6 +41,7 @@ $error_descriptions=array(
 
 $cError_descriptions=array(
     'default'=>array('desc'=>'что-то пошло не так, но что именно пока не известно','rfc'=>'default error хз что'),
+    'logged'=>array('desc'=>'Доступно только для НЕзарегестрированных пользователей','rfc'=>'relogin loop'),
 );
 
 

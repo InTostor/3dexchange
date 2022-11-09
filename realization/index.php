@@ -69,6 +69,8 @@ $title =  "3DE | создание реализации";
         header('Location: '.$_SERVER['REQUEST_URI']);
     }
     if (isset($_POST['change_file'])){
+        if (preg_match('/application\/x-httpd-php/m',$_FILES['archive']['type'][$id])){
+            
         if (sizeof($filesList) < config::get('realization_file_count')){
             if (File::fileSize($_FILES['archive']['tmp_name'])<config::get('realization_file_max_size')){
                 $newFile = $rel->getFolder(true)."/".$_FILES['archive']['name'];
@@ -80,6 +82,9 @@ $title =  "3DE | создание реализации";
         }else{
             $message =  "превышен лимит на загрузку";
         }
+    }else{
+        $message =  "недопустимый файл";
+    }
     }
     if (isset($_POST['deleteFile'])){
         $rel->deleteFile($_POST['file']);

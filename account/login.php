@@ -20,7 +20,11 @@ require_once "$ROOT/settings/settings.php";
 require_once "$ROOT/resources/php/common.php";
 require_once("$ROOT/resources/php/classes/User.php");
 
-setcookie("came_from",$_SERVER['HTTP_REFERER'], time()+180, '/'); //allows to move user at 45 line (because of POST requests on page)
+if (isset($_SERVER['HTTP_REFERER'])){
+    setcookie("came_from",$_SERVER['HTTP_REFERER'], time()+180, '/'); //allows to move user at 49 line (because of POST requests on page)
+}else{
+    setcookie("came_from","/", time()+180, '/');
+}
 
 $message="";
 
@@ -38,7 +42,7 @@ if (isset($_POST["login"])){
         User::remember($username_given,md5($password_given));
         $usr = new User();
         $usr->constructWithUsername($username_given);
-        session_set_cookie_params(0);
+        // session_set_cookie_params(0);
         session_start();
         $_SESSION['ClassUser'] = $usr;
         echo "<script>showMessage('Вход выполнен',2000)</script>";
@@ -63,7 +67,7 @@ if (isset($_POST["login"])){
     <div class="form_inner">
 
             <form action="" method="post" id="login" class="login_form">
-                <input class="form_input" type="text" name="username" required autofocus autocomplete="on" placeholder="логин/почта/телефон/id">
+                <input class="form_input" type="text" name="username" required autocomplete="on" placeholder="логин/почта/телефон/id">
                 <input class="form_input" type="password" name="password" required autocomplete="on" placeholder="пароль" >
 
                 <input class="form_input login" type="submit" name="login" value="Войти">

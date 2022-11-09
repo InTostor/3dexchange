@@ -178,6 +178,11 @@ Class Realization{
         }
     }
 
+    static function getUrlWithIds($pid,$rid){
+        $url = "/item?view&id=$pid#$rid";
+        return "$url";        
+    }
+
 
 }
 

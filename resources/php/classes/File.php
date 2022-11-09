@@ -29,12 +29,15 @@ class File{
     }
 
     static function moveFile($file,$destination){
+
         return rename($file,$destination.pathinfo($file)['basename']);
     }
     static function renameFile($file,$newBaseName){
         return rename($file,$newBaseName);
     }
+
     static function moveAndRenameFile($file,$newFile){
+        
         $dir = pathinfo($newFile)['dirname'];
         if (!file_exists($dir)) {
             self::mkdir($dir);

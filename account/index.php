@@ -1,20 +1,25 @@
 <?php
+
+use function PHPSTORM_META\type;
+
 $ROOT = $_SERVER['DOCUMENT_ROOT'];
 require_once "$ROOT/resources/php/classes/User.php";
-// there should be loading of required script for this situation (no account/logged/other)
-// $usrPage = "acc"
-// header("Location:".$usrPage);
-
-$is_logged = false;
-$is_logged = false;
 
 
-if (isset($_COOKIE['logged_as']) and isset($_COOKIE['logged_with'])){
-    $is_logged = $_COOKIE['logged_as']!="null" and $_COOKIE['logged_with']!="null";
+session_start();
+if (isset($_SESSION['ClassUser'])){
+$usr = $_SESSION['ClassUser'];
+}else{
+    $usr = new User();
 }
 
+$usrPage = $usr->getViewUrl($isSystemRoot = false,$type="username");
+$is_logged = $usr->isLogged();
+
+
 if ($is_logged == true) {
-    require "./logged.php";
+    header("Location:".$usrPage);
+    // require "./logged.php";
 
 } else {
     require "./login.php";

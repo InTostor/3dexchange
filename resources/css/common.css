@@ -42,15 +42,20 @@ a:hover{
     color:rgb(180, 159, 101);
 }
 
-input {
+input, textarea {
     outline:none;
+    padding: 2px;
+    border-radius: 2px;
+    border:none;
 }
+
 
 body {
     margin: 0;
     padding:0;
     min-height: 100vh;
     background-color: #d1d1d1;
+
 }
 
 

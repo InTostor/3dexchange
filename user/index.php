@@ -4,6 +4,8 @@ $ROOT = $_SERVER['DOCUMENT_ROOT'];
 require "$ROOT/settings/settings.php";
 require "$ROOT/resources/php/common.php";
 require_once "$ROOT/resources/php/classes/User.php";
+require_once "$ROOT/resources/php/classes/Realization.php";
+
 
 
 if (isset($_GET['id'])){

@@ -13,8 +13,8 @@ class User {
     public $access_level;
     public $last_login_date;
     public $exists;
-    private $email;
-    private $phone;
+    public $email;
+    public $phone;
     public $location;
     public $description_md;
     public $mood;
@@ -118,8 +118,9 @@ class User {
     
 // ! remember that user view is in /user and user editing in /account/actions.php
 
-    function getViewUrl($isSystemRoot = false){
-        return $this->getViewUrlWithId($this->id,$isSystemRoot);
+    function getViewUrl($isSystemRoot = false,$type="id"){
+        if($type=="id"){return $this->getViewUrlWithId($this->id,$isSystemRoot);}
+        if($type=="username"){return $this->getViewUrlWithUsername($this->username,$isSystemRoot);}
     }
     static function getViewUrlWithId($id,$isSystemRoot = false){
         if ($isSystemRoot==false){
@@ -130,6 +131,15 @@ class User {
             }
     }
     
+    static function getViewUrlWithUsername($username,$isSystemRoot = false){
+        if ($isSystemRoot==false){
+            return "/user?view&username=$username";
+            }else{
+                $rt = $_SERVER['DOCUMENT_ROOT'];
+            return "$rt/user?view&username=$username";
+            }
+    }
+
     function geteditUrl($isSystemRoot = false){
         if ($isSystemRoot==false){
         // return "/user?edit&id=$this->id";
@@ -182,19 +192,15 @@ class User {
 
 
     function isExists(){
-        $conn = getDB();
-        $stmt = $conn->prepare("select idusers from users where idusers = ?");
-        $stmt->bind_param("i",$this->id);
-        $stmt->execute();
-        $res = $stmt->get_result();
-        $val=$res->fetch_assoc();
-        if ($val['idusers'] =="null" ){
-            $this->exists = false;
-        }else{
+        $query = 'SELECT EXISTS(SELECT idusers FROM users where idusers = ? or username = ?)';
+        $sel = 'EXISTS(SELECT idusers FROM users where idusers = ? or username = ?)';
+        $res = Database::executeStmt($query,"ss",[$this->id,$this->username])[0][$sel];
+        if ($res==1){
             $this->exists = true;
+        }else{
+            $this->exists = false;
         }
-        $stmt->close();
-        $conn->close();
+
         return $this->exists;
     }
 
@@ -205,7 +211,7 @@ class User {
         if (file_exists("$rt/upload/avatars/".$this->id.".png")){$rel = $this->id.".png";
         }elseif (file_exists("$rt/upload/avatars/".$this->id.".jpeg")){$rel = $this->id.".jpeg";
         }elseif (file_exists("$rt/upload/avatars/".$this->id.".gif")){$rel = $this->id.".gif";
-        }else{$rel = "resources/no_avatar.png";}
+        }else{return  "resources/images/no_avatar.png";}
 
         if ($isSystemRoot){
             return $rt."/".$USER_AVATAR_STORAGE."/".$rel;
@@ -294,12 +300,17 @@ class User {
         }
     }
 
+    function getWorks($amount=30){
+        $out['realizations'] = Database::executeStmt('SELECT * from realizations where author = ? order by -rating limit ?',
+        "ss",[$this->id,$amount]);
+        return $out;
+    }
 
     function register(){
 
         if (!($this->isExists())){
             $conn=getDB();
-            $stmt = $conn->prepare("insert into users (username,password,register_date,email,phone_unmber) values(?,?,?,?,?)");
+            $stmt = $conn->prepare("insert into users (username,password,register_date,email,phone_number) values(?,?,?,?,?)");
             $time=time();
             $stmt->bind_param("ssiss",
              $this->username,
@@ -457,6 +468,16 @@ class User {
             session_destroy();
         }
 
+    }
+
+    static function extractFromSession(){
+        session_start();
+        if (isset($_SESSION['ClassUser'])){
+            $usr = $_SESSION['ClassUser'];
+        }else{
+            $usr = new User();
+        }
+        return $usr;
     }
 
     function isAuthorOf($item,$id){

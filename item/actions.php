@@ -80,11 +80,20 @@ if (isset($_POST['confirm_value_change'])){
 if ($mode =="edit"){
     if (isset($_POST['submit_docs_adding'])){
 
+
         foreach ($_FILES['docs']['tmp_name'] as $id => $tFile){
+            if (sizeof($part->getDocumentsList())>config::get('part_file_count')){
+                goto end_of_docs_processing;
+            }
+            // ! don't accept .php files
+            if (preg_match('/application\/x-httpd-php/m',$_FILES['docs']['type'][$id])){
+                break;
+            }
             $name=$_FILES['docs']['name'][$id];
             $npath = $part->getDocumentsFolder(true)."/".$name;
             File::moveAndRenameFile($tFile,$npath);
         }
+        end_of_docs_processing:
     }
 
     if (isset($_POST['deleteImage'])){
@@ -95,6 +104,7 @@ if ($mode =="edit"){
     }
     $docsList=$part->getDocumentsList();
     $imgsList=$part->getImagesList();
+    
     
     File::cleanTempShit("$ROOT/item");
 }
@@ -123,7 +133,7 @@ form{
 <p>---предназначен для---<textarea maxlength="45" cols="100" type="text" name="original_made_for"  required placeholder="Для чего была предназначена деталь (если несколько вариантов, то они записываются через ; ). Например жигули 2121; жигули 2101; жигули 2106"><?=$original_made_for?></textarea></p>
 <p>полностью совместим с-<textarea maxlength="45" cols="100" type="text" name="fully_compatible_for"  placeholder="Для чего эта деталь подходит без изменений (если несколько вариантов, то они записываются через ; ). Например жигули 2102; жигули 2103; жигули 2107"><?=$fully_compatible_for?></textarea></p>
 <p>-частично совместим с-<textarea maxlength="45" cols="100" type="text" name="partly_compatible_for"  placeholder="Для чего эта деталь подходит с некоторыми изменениями (если несколько вариантов, то они записываются через ; ). Например УАЗ hunter"><?=$partly_compatible_for?></textarea></p>
-<p>-Тэги-<textarea maxlength="45" cols="100" type="text" name="tags"  placeholder="Тэги"><?=$partly_compatible_for?></textarea></p>
+<p>-Тэги-<textarea maxlength="45" cols="100" type="text" name="tags"  placeholder="Тэги"><?=$tags?></textarea></p>
 <p>категория<select name = "category" id="category">
 <?php
 $seled=false;
@@ -196,6 +206,7 @@ if (isset($_POST['submit_image_adding'])){
         if (sizeof($part->getImagesList())>config::get('part_image_count')){
             goto end_of_image_processing;
         }
+
         $name=$_FILES['images']['name'][$id];
         if (preg_match('/image/m',$_FILES['images']['type'][$id])){
             if (File::fileSize($tFile)<config::get('part_image_max_size')){            
