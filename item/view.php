@@ -25,6 +25,7 @@ $stmt->bind_param("s",$part_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
+
 if ($row==NULL){
     raiseHttpError(404);
     die();
@@ -53,6 +54,8 @@ $number_of_realizations = sizeof($realizations_all);
 if ($number_of_realizations=="NULL"){$number_of_realizations=0;}
 $makeref="/realization?edit&pid=$part_id&rid=new";
 
+$canUserEditPart = $usr->isAuthorOf("part",$part_id) and $usr->checkPermission("part.edit.self") or $usr->checkPermission('realization.edit.any');
+
 ?>
 
 <!DOCTYPE HTML>
@@ -64,6 +67,8 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
     <link rel="stylesheet" href="/item/index.css">
     <title><?=$title?></title>
 </head>
+
+<body>
 
 
 <div class="content_wrapper">
@@ -95,7 +100,7 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
                 <a class="right_side_button" href="<?=$makeref?>">Добавить реализацию</a>
                 <!-- <a class="right_side_button" href="#">Сохранить в закладки</a> -->
                 <a class="right_side_button" href="/item/browse.php?id=<?=$pid?>">Документация</a>
-                <a class="right_side_button" href="/item?edit&id=<?=$part_id?>">Редактировать</a>
+                <?php if ($canUserEditPart){echo '<a class="right_side_button" href="/item?edit&id=<?=$part_id?>">Редактировать</a>';}?>
 
                 <a class="right_side_button" href="#">Пожаловаться</a>
                 <h3>Тэги: </h3>
@@ -111,52 +116,58 @@ $makeref="/realization?edit&pid=$part_id&rid=new";
         
         <div class="realizations">
 <?php
-
+// changing link if realizations exists or not
 if($number_of_realizations==0){ 
     echo "<h2 class='no_realizations'>Еще нет реализаций этой детали <a href=$makeref>добавить</a> </h2>";
 }else{
     echo "<h2 class='no_realizations'><a href=$makeref>добавить</a> реализацию</h2>";
 } 
 
+// getting and printing all realizations of this part
 if ($number_of_realizations!=0){
-foreach ($realizations_all as $rr){
+    foreach ($realizations_all as $rr){
 
-    $rid = $rr['idrealizations'];
-    $name = $rr['name'];
-    $author = User::convertIdToUsername($rr['author']);
-    $rating = $rr['rating'];
-    $make_date = $rr['make_date'];
-    $edit_date = $rr['edit_date'];
-    $rel_description = $rr['description'];
-    $authorUrl = User::getViewUrlWithId($rr['author']);
-    if ($rel_description==NULL){$rel_description="N/A";}
-    $relimage_url = Realization::getImageUrlWithIds($pid,$rid);
-    $file_url = "/realization/browse.php?rid=$rid&pid=$pid";
-    $editRelUrl ="/realization?edit&pid=1&rid=$rid";
-    $canUserEdit = ($usr->checkPermission('realization.edit.*') and $usr->isAuthorOf("realization",$rid)) or $usr->checkPermission('realization.edit.any');
-    if ($rating<0){
-        $ratingColor = $badRatingColor;
-    }else{
-        $ratingColor = $goodRatingColor;
-    }
-    
-    echo "
-    <div class='realization' id=$rid>
-        <img class='realization_img' src=$relimage_url>
-    ";
-    if( $canUserEdit ){echo "<a href='$editRelUrl'> <span class='material-icons'>edit</span> </a>";}else{echo "<div style='width:30px'></div>";}
-    echo "
-        <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
-        <a class='realization_author' href='$authorUrl'>Автор: $author</a>
-        <div class='realization_vote'>
-        <button class='rating_change' id='decrease_$rid' onclick='decreaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_more</span></button>
-        <p style='color: $ratingColor' class=\"rating\" id=rating$rid>$rating</p>
-        <button class='rating_change' id='increase_$rid' onclick='increaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_less</span></button>
+        $rid = $rr['idrealizations'];
+        $name = $rr['name'];
+        $author = User::convertIdToUsername($rr['author']);
+        $rating = $rr['rating'];
+        $make_date = $rr['make_date'];
+        $edit_date = $rr['edit_date'];
+        $rel_description = $rr['description'];
+        $authorUrl = User::getViewUrlWithId($rr['author']);
+        if ($rel_description==NULL){$rel_description="N/A";}
+        $relimage_url = Realization::getImageUrlWithIds($pid,$rid);
+        $file_url = "/realization/browse.php?rid=$rid&pid=$pid";
+        $editRelUrl ="/realization?edit&pid=1&rid=$rid";
+        $canUserEditRel = ($usr->checkPermission('realization.edit.*') and $usr->isAuthorOf("realization",$rid)) or $usr->checkPermission('realization.edit.any');
+        if ($rating<0){
+            $ratingColor = $badRatingColor;
+        }else{
+            $ratingColor = $goodRatingColor;
+        }
+
+        echo "
+        <div class='realization' id=$rid>
+            <img class='realization_img' src=$relimage_url>
+        ";
+        if( $canUserEditRel ){
+            echo "<a href='$editRelUrl'> <span class='material-icons'>edit</span> </a>";
+        }else{
+            echo "<div style='width:30px'></div>";
+        }
+        echo "
+            <p class='realization_text'> <b>$name</b> <br>$rel_description </p>
+            <a class='realization_author' href='$authorUrl'>Автор: $author</a>
+            <div class='realization_vote'>
+            <button class='rating_change' id='decrease_$rid' onclick='decreaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_more</span></button>
+            <p style='color: $ratingColor' class=\"rating\" id=rating$rid>$rating</p>
+            <button class='rating_change' id='increase_$rid' onclick='increaseRating(this,$pid,$rid)' ><span class='material-symbols-outlined vote'>expand_less</span></button>
+            </div>
+            <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.файлы </a>
         </div>
-        <a class='realization_download' href='$file_url'><span class='material-symbols-outlined'>file_download</span>.файлы </a>
-    </div>
-    ";
-}}
+        ";
+    }
+}
 ?>
 
         </div>
@@ -247,13 +258,7 @@ foreach ($realizations_all as $rr){
 
         xhr.send(POSTq)
     }
-
-
-
-
-
-
-
 </script>
 
+</body>
 </html>

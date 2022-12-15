@@ -106,11 +106,11 @@ $location = $usr->getLocation();
     ?>
 
 <form action="" method="post" id="change_values" onsubmit = "return getContent()">
-<p>----email-----<input maxlength="4096" type="email" name="email" id="fcName" required placeholder="Текст на странице аккаунта в формате html" value=<?=$email?>></p>
-<p>---телефон----<input  maxlength="4096" type="phone" name="phone_number" id="fcPhone" required placeholder="Текст на странице аккаунта в формате html"value=<?=$phone_number?>></p>
-<p>---описание---<textarea style="display:none" maxlength="4096" type="text" name="description_md" id="fcDesc" required placeholder="Текст на странице аккаунта в формате html"><?=$desc?></textarea></p>
-<p>----статус----<textarea  maxlength="4096" type="text" name="mood" id="fcMood" required placeholder="Текст на странице аккаунта в формате html"><?=$mood?></textarea></p>
-<p>Местоположение<input  maxlength="4096" type="text" name="location" id="fcLoc" required placeholder="Текст на странице аккаунта в формате html"value=<?=$location?>></textarea></p>
+<p>----email-----<input maxlength="4096" type="email" name="email" id="fcName" placeholder="Текст на странице аккаунта в формате html" value=<?=$email?>></p>
+<p>---телефон----<input  maxlength="4096" type="phone" name="phone_number" id="fcPhone" placeholder="Текст на странице аккаунта в формате html"value=<?=$phone_number?>></p>
+<p>---описание---<textarea style="display:none" maxlength="4096" type="text" name="description_md" id="fcDesc" placeholder="Текст на странице аккаунта в формате html"><?=$desc?></textarea></p>
+<p>----статус----<textarea  maxlength="4096" type="text" name="mood" id="fcMood" placeholder="Текст на странице аккаунта в формате html"><?=$mood?></textarea></p>
+<p>Местоположение<input  maxlength="4096" type="text" name="location" id="fcLoc" placeholder="Текст на странице аккаунта в формате html"value=<?=$location?>></textarea></p>
     <input  type="submit" name="confirm_value_change" value="применить">
 </form>
 
